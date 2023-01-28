@@ -1,4 +1,4 @@
-package main
+package logger
 
 import (
 	"encoding/json"
@@ -53,7 +53,7 @@ func (l *Logger) log(message string, color colors) {
 }
 
 func (l *Logger) Info(message string) {
-	l.log(message, color.BlueString)
+	l.log(message, color.GreenString)
 }
 
 func (l *Logger) Warning(message string) {
@@ -72,6 +72,8 @@ func New(app string, module string) *Logger {
 
 	return &logger
 }
+
+var GlobalLogger *Logger = New("AUTHENTICATION_SERVICE", "MainModule")
 
 func main() {
 	l := New("AUTHENTICATION_SERVICE", "LoggerModule")
