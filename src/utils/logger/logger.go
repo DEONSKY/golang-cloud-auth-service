@@ -64,6 +64,11 @@ func (l *Logger) Error(message string) {
 	l.log(message, color.RedString)
 }
 
+func (l *Logger) Fatal(message string) {
+	l.log(message, color.MagentaString)
+	os.Exit(1)
+}
+
 func New(app string, module string) *Logger {
 	logger := Logger{
 		App:    app,
