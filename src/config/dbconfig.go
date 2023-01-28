@@ -25,6 +25,7 @@ func SetupDatabaseConnection() *gorm.DB {
 
 	db.AutoMigrate(
 		&model.User{},
+		&model.Subject{},
 	)
 	return db
 }
