@@ -1,1 +1,8 @@
-# go-rest-boilerplate
+# Authentication Service
+
+## Installation
+
+```sh
+cp sample.env .env
+```
+
