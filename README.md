@@ -1,18 +1,37 @@
 # Authentication Service
 
 ## DB Diagram
-![image](https://user-images.githubusercontent.com/56198330/215271917-ef87085c-3266-4f67-87c0-19862e194fcf.png)
+![image](https://user-images.githubusercontent.com/56198330/215278354-dc0a4268-982e-43f2-93c4-72422f276f3f.png)
+
 ```
-Table auth.users {
+Table auth.organizations {
   id uuid
+  name string
+  description string
+  createdAt datetime
+  updatedAt datetime
+  deletedAt datetime
+}
+
+Table auth.userMails {
+  id uuid
+  email string
+  createdAt datetime
+  updatedAt datetime
+  deletedAt datetime
+}
+
+Table auth.organizationUsers {
+  id uuid
+  userId uuid [ref: > auth.userMails.id]
   organizationId uuid [ref: > auth.organizations.id]
   firstName string
   middleName string
   lastName string
-  email string
   username string
   passwordHash string
   passwordSalt string
+  state string // active, pending_invite_confirmation, disabled
   createdAt datetime
   updatedAt datetime
   deletedAt datetime
@@ -36,7 +55,7 @@ Table auth.groupPolicies {
 
 Table auth.userGroups {
   id uuid
-  userId uuid [ref: > auth.users.id]
+  userId uuid [ref: > auth.organizationUsers.id]
   groupId uuid [ref: > auth.groups.id]
   createdAt datetime
   updatedAt datetime
@@ -58,17 +77,8 @@ Table auth.clients {
   secret string
 }
 
-Table auth.organizations {
-  id uuid
-  name string
-  description string
-  //  ownerId uuid [ref: > auth.users.id]
-  subscription string // it would be enum. I don't think about it right now.
-  createdAt datetime
-  updatedAt datetime
-  deletedAt datetime
-}
 
+Ref: "auth"."groups"."id" < "auth"."groups"."description"
 ```
 
 
