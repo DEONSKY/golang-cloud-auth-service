@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/forfam/authentication-service/src/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -23,10 +22,6 @@ func SetupDatabaseConnection() *gorm.DB {
 		panic("Failed to create a connection to database")
 	}
 
-	db.AutoMigrate(
-		&model.User{},
-		&model.Subject{},
-	)
 	return db
 }
 

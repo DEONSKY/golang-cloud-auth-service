@@ -1,6 +1,9 @@
 package migrations
 
-import "database/sql"
+import (
+	"github.com/forfam/authentication-service/src/model"
+	"gorm.io/gorm"
+)
 
 func init() {
 	migrator.AddMigration(&Migration{

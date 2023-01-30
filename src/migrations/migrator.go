@@ -7,9 +7,9 @@ import (
 	"html/template"
 	"os"
 	"time"
+
 	"gorm.io/gorm"
 )
-
 
 type Migration struct {
 	Version string
@@ -82,26 +82,28 @@ func Create(name string) error {
 }
 
 type SchemaMigrations struct {
-	version              string         `gorm:"type:varchar(255)"`
+	Version string `gorm:"primaryKey;type:varchar(255)"`
 }
 
-func Init(db *gorm.DB) (*Migrator) {
+func Init(db *gorm.DB) *Migrator {
 	migrator.db = db
 
 	// Create `schema_migrations` table to remember which migrations were executed.
-	db.Migrator().CreateTable(&SchemaMigrations{})
+	tableExists := db.Migrator().HasTable(&SchemaMigrations{})
+
+	if !tableExists {
+		db.Migrator().CreateTable(&SchemaMigrations{})
+	}
 
 	var schemaMigrations []SchemaMigrations
 	// Find out all the executed migrations
 	db.Model(&SchemaMigrations{}).Find(&schemaMigrations)
-	fmt.Println("asdasd")
 
-	fmt.Println(len(schemaMigrations))
 	// Mark the migrations as Done if it is already executed
 	for _, db_migration := range schemaMigrations {
-		
-		if migrator.Migrations[db_migration.version] != nil {
-			migrator.Migrations[db_migration.version].done = true
+
+		if migrator.Migrations[db_migration.Version] != nil {
+			migrator.Migrations[db_migration.Version].done = true
 		}
 	}
 
@@ -112,39 +114,40 @@ func (m *Migrator) Up(step int) error {
 
 	tx := m.db.Begin()
 
-
 	count := 0
 
 	for _, v := range m.Versions {
 		if step > 0 && count == step {
 			break
 		}
-	
+
 		mg := m.Migrations[v]
-	
+
 		if mg.done {
 			continue
 		}
-	
+
 		fmt.Println("Running migration", mg.Version)
 		if err := mg.Up(tx); err != nil {
 			tx.Rollback()
 			return err
 		}
-			
-		schemaMigration := SchemaMigrations{version: mg.Version}
-			
+
+		schemaMigration := SchemaMigrations{Version: mg.Version}
+
 		if err := tx.Save(&schemaMigration).Error; err != nil {
+			fmt.Println("Error", mg.Version)
 			tx.Rollback()
 			return err
 		}
 		fmt.Println("Finished running migration", mg.Version)
-	
+
 		count++
 
 	}
-	
+
 	tx.Commit()
+
 	return nil
 }
 

@@ -1,6 +1,9 @@
 package migrations
 
-import "database/sql"
+import (
+	"github.com/forfam/authentication-service/src/model"
+	"gorm.io/gorm"
+)
 
 func init() {
 	migrator.AddMigration(&Migration{
@@ -11,9 +14,12 @@ func init() {
 }
 
 func mig_20230129225715_init_schema_up(db *gorm.DB) error {
+
+	db.Migrator().CreateTable(&model.User{})
 	return nil
 }
 
 func mig_20230129225715_init_schema_down(db *gorm.DB) error {
+	db.Migrator().DropTable(&model.User{})
 	return nil
 }
