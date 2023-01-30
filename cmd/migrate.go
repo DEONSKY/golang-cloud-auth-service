@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/forfam/authentication-service/src/migrations"
+	migrations "github.com/forfam/authentication-service/data/migrations/postgres"
 	"github.com/forfam/authentication-service/src/config"
 	"github.com/spf13/cobra"
 )

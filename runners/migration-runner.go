@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/forfam/authentication-service/src/cmd"
+	"github.com/forfam/authentication-service/cmd"
 )
 
 func main() {

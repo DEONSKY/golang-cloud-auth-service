@@ -62,13 +62,13 @@ func Create(name string) error {
 
 	var out bytes.Buffer
 
-	t := template.Must(template.ParseFiles("./src/migrations/template.txt"))
+	t := template.Must(template.ParseFiles("./data/migrations/postgres/template.txt"))
 	err := t.Execute(&out, in)
 	if err != nil {
 		return errors.New("Unable to execute template:" + err.Error())
 	}
 
-	f, err := os.Create(fmt.Sprintf("./src/migrations/%s_%s.go", version, name))
+	f, err := os.Create(fmt.Sprintf("./data/migrations/postgres/%s_%s.go", version, name))
 	if err != nil {
 		return errors.New("Unable to create migration file:" + err.Error())
 	}
