@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/forfam/authentication-service/src/utils/logger"
 	"gorm.io/gorm"
 )
 
@@ -77,7 +78,7 @@ func Create(name string) error {
 		return errors.New("Unable to write to migration file:" + err.Error())
 	}
 
-	fmt.Println("Generated new migration files...", f.Name())
+	logger.GlobalLogger.Info("Generated new migration files...")
 	return nil
 }
 
@@ -127,7 +128,7 @@ func (m *Migrator) Up(step int) error {
 			continue
 		}
 
-		fmt.Println("Running migration", mg.Version)
+		logger.GlobalLogger.Info("Running migration " + mg.Version)
 		if err := mg.Up(tx); err != nil {
 			tx.Rollback()
 			return err
@@ -140,7 +141,7 @@ func (m *Migrator) Up(step int) error {
 			tx.Rollback()
 			return err
 		}
-		fmt.Println("Finished running migration", mg.Version)
+		logger.GlobalLogger.Info("Finished running migration " + mg.Version)
 
 		count++
 
@@ -168,7 +169,7 @@ func (m *Migrator) Down(step int) error {
 			continue
 		}
 
-		fmt.Println("Reverting Migration", mg.Version)
+		logger.GlobalLogger.Info("Reverting Migration " + mg.Version)
 		if err := mg.Down(tx); err != nil {
 			tx.Rollback()
 			return err
@@ -178,7 +179,7 @@ func (m *Migrator) Down(step int) error {
 			tx.Rollback()
 			return err
 		}
-		fmt.Println("Finished reverting migration", mg.Version)
+		logger.GlobalLogger.Info("Finished reverting migration " + mg.Version)
 
 		count++
 	}
@@ -201,9 +202,9 @@ func (m *Migrator) MigrationStatus() error {
 		mg := m.Migrations[v]
 
 		if mg.done {
-			fmt.Println(fmt.Sprintf("Migration %s... completed", v))
+			logger.GlobalLogger.Info(fmt.Sprintf("Migration %s... completed", v))
 		} else {
-			fmt.Println(fmt.Sprintf("Migration %s... pending", v))
+			logger.GlobalLogger.Info(fmt.Sprintf("Migration %s... pending", v))
 		}
 	}
 
