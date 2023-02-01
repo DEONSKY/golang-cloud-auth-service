@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	defer config.CloseDatabaseConnection()
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {

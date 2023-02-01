@@ -44,7 +44,7 @@ var migrateUpCmd = &cobra.Command{
 			return
 		}
 
-		db := config.SetupDatabaseConnection()
+		db, err := config.SetupDatabaseConnection()
 
 		migrator := migrations.Init(db)
 		if err != nil {
@@ -72,7 +72,7 @@ var migrateDownCmd = &cobra.Command{
 			return
 		}
 
-		db := config.SetupDatabaseConnection()
+		db, err := config.SetupDatabaseConnection()
 
 		migrator := migrations.Init(db)
 		if err != nil {
@@ -92,7 +92,11 @@ var migrateStatusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "display status of each migrations",
 	Run: func(cmd *cobra.Command, args []string) {
-		db := config.SetupDatabaseConnection()
+		db, err := config.SetupDatabaseConnection()
+
+		if err != nil {
+			fmt.Println("Unable to fetch migration status")
+		}
 
 		migrator := migrations.Init(db)
 

@@ -3,12 +3,19 @@ package config
 import (
 	"fmt"
 	"os"
+	"time"
 
+	"github.com/forfam/authentication-service/src/utils/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func SetupDatabaseConnection() *gorm.DB {
+var GormDB *gorm.DB = nil
+var IsDbConnected bool = false
+
+const dbReconnectionTimeout = 5 * time.Second
+
+func SetupDatabaseConnection() (*gorm.DB, error) {
 
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
@@ -18,16 +25,45 @@ func SetupDatabaseConnection() *gorm.DB {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432", dbHost, dbUser, dbPass, dbName)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	GormDB = db
+
 	if err != nil {
-		panic("Failed to create a connection to database")
+		IsDbConnected = false
+		logger.GlobalLogger.Error("DB connection attempt failed")
+		return db, err
 	}
 
-	return db
+	IsDbConnected = true
+	logger.GlobalLogger.Info("DB connection attempt successfull")
+	return db, err
+
 }
 
-//CloseDatabaseConnection method is closing a connection between your app and your db
-func CloseDatabaseConnection(db *gorm.DB) {
-	dbSQL, err := db.DB()
+func AutoConnectDbLoop() {
+	for {
+		autoConnectionControl()
+	}
+}
+
+func autoConnectionControl() {
+	defer time.Sleep(dbReconnectionTimeout)
+	if GormDB == nil {
+		SetupDatabaseConnection()
+		return
+	}
+	sqlDB, err := GormDB.DB()
+	if sqlDB.Ping() != nil {
+		IsDbConnected = false
+	}
+	if err == nil && !IsDbConnected {
+		SetupDatabaseConnection()
+	}
+}
+
+// CloseDatabaseConnection method is closing a connection between your app and your db
+func CloseDatabaseConnection() {
+	dbSQL, err := GormDB.DB()
 	if err != nil {
 		panic("Failed to close connection from database")
 	}

@@ -52,6 +52,10 @@ func (l *Logger) log(message string, color colors) {
 	}
 }
 
+func (l *Logger) Trace(message string) {
+	l.log(message, color.CyanString)
+}
+
 func (l *Logger) Info(message string) {
 	l.log(message, color.GreenString)
 }

@@ -68,5 +68,5 @@ func init() {
 
 	logger.GlobalLogger.Info("Env variable loaded successfuly")
 
-	SetupDatabaseConnection()
+	go AutoConnectDbLoop()
 }
