@@ -13,7 +13,7 @@ import (
 var GormDB *gorm.DB = nil
 var IsDbConnected bool = false
 
-const dbReconnectionTimeout = 5 * time.Second
+const dbReconnectionTimeout = 30 * time.Second
 
 func SetupDatabaseConnection() (*gorm.DB, error) {
 
