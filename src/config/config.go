@@ -38,8 +38,10 @@ func parseEnv(env string) (parsed goenv, err error) {
 	return parsed, nil
 }
 
-var ENV goenv
-var HTTP_PORT int
+var (
+	ENV       goenv
+	HTTP_PORT int
+)
 
 func init() {
 	var err error

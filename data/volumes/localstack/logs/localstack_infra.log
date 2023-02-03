@@ -1,0 +1,10 @@
+
+LocalStack version: 1.3.2.dev
+LocalStack Docker container id: 2e7d399ddd4d
+LocalStack build date: 2023-01-31
+LocalStack build git hash: fb4f5f60
+
+Ready.
+{
+    "Location": "http://authentication-service.s3.localhost.localstack.cloud:4566/"
+}

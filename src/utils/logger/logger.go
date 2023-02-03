@@ -70,20 +70,10 @@ func (l *Logger) Fatal(message string) {
 }
 
 func New(app string, module string) *Logger {
-	logger := Logger{
+	return &Logger{
 		App:    app,
 		Module: module,
 	}
-
-	return &logger
 }
 
 var GlobalLogger *Logger = New("AUTHENTICATION_SERVICE", "MainModule")
-
-func main() {
-	l := New("AUTHENTICATION_SERVICE", "LoggerModule")
-
-	l.Info("Hello World!")
-	l.Warning("Fire started!!")
-	l.Error("WORLD ON FIRE!")
-}
