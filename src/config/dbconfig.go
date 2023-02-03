@@ -14,6 +14,7 @@ var GormDB *gorm.DB = nil
 var IsDbConnected bool = false
 
 const dbReconnectionTimeout = 30 * time.Second
+const dbReconnectionRetryCount = 10
 
 func SetupDatabaseConnection() (*gorm.DB, error) {
 
@@ -41,7 +42,7 @@ func SetupDatabaseConnection() (*gorm.DB, error) {
 }
 
 func AutoConnectDbLoop() {
-	for {
+	for counter := 0; counter < dbReconnectionRetryCount; counter++ {
 		autoConnectionControl()
 	}
 }

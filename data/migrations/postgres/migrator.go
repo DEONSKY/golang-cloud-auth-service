@@ -12,6 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
+//Migrator files. DONT DELETE WITH MIGRATIONS
+
 type Migration struct {
 	Version string
 	Up      func(*gorm.DB) error

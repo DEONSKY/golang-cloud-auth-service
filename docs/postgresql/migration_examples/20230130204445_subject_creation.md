@@ -1,3 +1,4 @@
+```go
 package migrations
 
 import (
@@ -22,3 +23,4 @@ func mig_20230130204445_subject_creation_down(db *gorm.DB) error {
 	db.Migrator().DropTable(&model.Subject{})
 	return nil
 }
+```

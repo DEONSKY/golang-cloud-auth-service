@@ -3,14 +3,16 @@ package cmd
 import (
 	"fmt"
 
+	"log"
+
 	migrations "github.com/forfam/authentication-service/data/migrations/postgres"
 	"github.com/forfam/authentication-service/src/config"
 	"github.com/spf13/cobra"
 )
 
 var migrateCmd = &cobra.Command{
-	Use:   "migrate",
-	Short: "database migrations tool",
+	Use:   "migration",
+	Short: "Migration tool for versioned gorm migrations by",
 	Run: func(cmd *cobra.Command, args []string) {
 
 	},
@@ -120,6 +122,10 @@ func init() {
 	// Add "create", "up" and "down" commands to the "migrate" command
 	migrateCmd.AddCommand(migrateUpCmd, migrateDownCmd, migrateCreateCmd, migrateStatusCmd)
 
-	// Add "migrate" command to the root command
-	rootCmd.AddCommand(migrateCmd)
+}
+
+func ExecuteMigrationTool() {
+	if err := migrateCmd.Execute(); err != nil {
+		log.Fatalln(err.Error())
+	}
 }

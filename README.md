@@ -88,28 +88,4 @@ Ref: "auth"."groups"."id" < "auth"."groups"."description"
 cp sample.env .env
 ```
 
-Example empty migration creation
-```sh
-go run runners/migration-runner.go migrate create -n example_migration
-```
-
-Run all migrations
-```sh
-go run runners/migration-runner.go migrate up  
-```
-
-Run next uncommited 2 migration
-```sh
-go run runners/migration-runner.go migrate up --step=2
-```
-
-Undo last committed 1 migration
-```sh
-go run runners/migration-runner.go migrate up --step=1
-```
-
-Show all migrations status
-```sh
-go run runners/migration-runner.go migrate status
-```
 
