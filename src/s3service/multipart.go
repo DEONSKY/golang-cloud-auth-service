@@ -36,8 +36,6 @@ func MultipartUpload(
 	splitted := strings.Split(file.Filename, ".")
 	key = strings.Trim(key, "\n") + "." + splitted[len(splitted)-1]
 
-	fmt.Println("key: %s", key)
-
 	input := &s3.CreateMultipartUploadInput{
 		Bucket:      aws.String(bucket),
 		Key:         aws.String(key),
