@@ -2,13 +2,13 @@ package s3service
 
 import (
 	"bytes"
-	"fmt"
 	"mime/multipart"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/s3"
+
 	"github.com/forfam/authentication-service/src/utils/logger"
 )
 
@@ -62,10 +62,10 @@ func MultipartUpload(
 		}
 		completedPart, err := uploadPart(upload, buffer[curr:curr+partLength], partNumber, log)
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Error(err.Error())
 			err := abortMultipartUpload(upload)
 			if err != nil {
-				fmt.Println(err.Error())
+				log.Error(err.Error())
 			}
 			return "", err
 		}
@@ -76,7 +76,7 @@ func MultipartUpload(
 
 	completeResponse, err := completeMultipartUpload(upload, completedParts)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error(err.Error())
 		return "", err
 	}
 
