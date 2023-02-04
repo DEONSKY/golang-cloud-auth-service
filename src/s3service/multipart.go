@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"mime/multipart"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -24,7 +25,7 @@ func MultipartUpload(
 ) (string, error) {
 	fileBuffer, err := file.Open()
 	if err != nil {
-		fmt.Println("Error while file open", err)
+		log.Error("Error while file open: " + err.Error())
 		return "", err
 	}
 	defer fileBuffer.Close()
@@ -32,6 +33,10 @@ func MultipartUpload(
 	fileSize := file.Size
 	buffer := make([]byte, fileSize)
 	fileBuffer.Read(buffer)
+	splitted := strings.Split(file.Filename, ".")
+	key = strings.Trim(key, "\n") + "." + splitted[len(splitted)-1]
+
+	fmt.Println("key: %s", key)
 
 	input := &s3.CreateMultipartUploadInput{
 		Bucket:      aws.String(bucket),
@@ -77,7 +82,7 @@ func MultipartUpload(
 		return "", err
 	}
 
-	fmt.Printf("Successfully uploaded file: %s\n", completeResponse.String())
+	log.Info("Successfully uploaded file: " + completeResponse.String())
 	return key, nil
 }
 

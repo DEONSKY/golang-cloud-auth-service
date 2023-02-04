@@ -1,7 +1,6 @@
 package s3service
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -33,13 +32,25 @@ func getConfig() *aws.Config {
 		logger.GlobalLogger.Fatal(`Missing env variable "AWS_S3_SERVER"`)
 	}
 
-	fmt.Println("AccessKey: %s, SecretKey: %s", accessKey, secretKey)
 	creds := credentials.NewStaticCredentials(accessKey, secretKey, "")
 	_, err := creds.Get()
 	if err != nil {
 		logger.GlobalLogger.Fatal("Bad AWS S3 credentials")
 	}
-	return aws.NewConfig().WithRegion(region).WithCredentials(creds).WithEndpoint(server)
+
+	// For debug AWS S3 requests
+	// return aws.
+	// 	NewConfig().
+	// 	WithRegion(region).
+	// 	WithCredentials(creds).
+	// 	WithEndpoint(server).
+	// 	WithLogLevel(aws.LogDebugWithHTTPBody)
+
+	return aws.
+		NewConfig().
+		WithRegion(region).
+		WithCredentials(creds).
+		WithEndpoint(server)
 }
 
 var s3Client *s3.S3

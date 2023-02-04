@@ -15,7 +15,8 @@ services:
       - DATA_DIR=/tmp/localstack/data
       - DEFAULT_REGION=eu-west-2
       - HOST_TMP_FOLDER=/tmp/localstack
-      - DEBUG=1C
+      - DEBUG=1
+      - DISABLE_CORS_CHECK="1"
     volumes:
       - ./data/volumes/localstack:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock

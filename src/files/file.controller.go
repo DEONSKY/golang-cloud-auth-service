@@ -2,9 +2,9 @@ package files
 
 import (
 	"os"
-	"os/exec"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 
 	_ "github.com/forfam/authentication-service/src/config"
 	"github.com/forfam/authentication-service/src/s3service"
@@ -25,7 +25,7 @@ func UploadFileEndpoint(ctx *fiber.Ctx) error {
 		})
 	}
 
-	key, err := exec.Command("uuidgen").Output()
+	key := uuid.New()
 	if err != nil {
 		log.Error("UUID generation is failed: " + err.Error())
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -35,7 +35,7 @@ func UploadFileEndpoint(ctx *fiber.Ctx) error {
 	}
 
 	log.Info("AWS Bucket is: " + defaultBucket)
-	_, err = s3service.MultipartUpload(defaultBucket, string(key), file, log)
+	_, err = s3service.MultipartUpload(defaultBucket, key.String(), file, log)
 
 	if err != nil {
 		log.Error("Something went wrong during file upload: " + err.Error())
@@ -45,7 +45,7 @@ func UploadFileEndpoint(ctx *fiber.Ctx) error {
 		})
 	}
 
-	log.Info("File uploaded successfuly: " + string(key))
+	log.Info("File uploaded successfuly: " + key.String())
 	return ctx.JSON(fiber.Map{
 		"status":  "success",
 		"message": "File uploaded successfuly",
