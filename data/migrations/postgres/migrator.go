@@ -154,8 +154,6 @@ func (m *Migrator) Up(step int) error {
 	return nil
 }
 
-// Code removed for brevity
-
 func (m *Migrator) Down(step int) error {
 	tx := m.db.Begin()
 
