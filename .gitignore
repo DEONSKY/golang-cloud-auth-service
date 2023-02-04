@@ -14,6 +14,7 @@
 dist
 data/volumes/postgres/*
 data/volumes/mongodb/*
+data/volumes/localstack/*
 
 # Env variables
 .env
