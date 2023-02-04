@@ -34,8 +34,7 @@ func UploadFileEndpoint(ctx *fiber.Ctx) error {
 		})
 	}
 
-	log.Info("AWS Bucket is: " + defaultBucket)
-	_, err = s3service.MultipartUpload(defaultBucket, key.String(), file, log)
+	fileName, err = s3service.MultipartUpload(defaultBucket, key.String(), file, log)
 
 	if err != nil {
 		log.Error("Something went wrong during file upload: " + err.Error())
@@ -45,11 +44,11 @@ func UploadFileEndpoint(ctx *fiber.Ctx) error {
 		})
 	}
 
-	log.Info("File uploaded successfuly: " + key.String())
+	log.Info("File uploaded successfuly: " + fileName)
 	return ctx.JSON(fiber.Map{
 		"status":  "success",
 		"message": "File uploaded successfuly",
-		"path":    key,
+		"path":    fileName,
 	})
 }
 
