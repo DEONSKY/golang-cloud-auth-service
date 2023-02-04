@@ -34,7 +34,7 @@ func UploadFileEndpoint(ctx *fiber.Ctx) error {
 		})
 	}
 
-	fileName, err = s3service.MultipartUpload(defaultBucket, key.String(), file, log)
+	fileName, err := s3service.MultipartUpload(defaultBucket, key.String(), file, log)
 
 	if err != nil {
 		log.Error("Something went wrong during file upload: " + err.Error())
