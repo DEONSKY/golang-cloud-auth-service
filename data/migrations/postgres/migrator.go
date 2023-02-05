@@ -13,7 +13,9 @@ import (
 	"gorm.io/gorm"
 )
 
-//Migrator files. DONT DELETE WITH MIGRATIONS
+type SchemaMigrations struct {
+	Version string `gorm:"primaryKey;type:varchar(255)"`
+}
 
 type Migration struct {
 	Version string
@@ -30,7 +32,6 @@ type Migrator struct {
 }
 
 var MigratorInstance = &Migrator{
-	Versions:   []string{},
 	Migrations: map[string]*Migration{},
 }
 
@@ -72,10 +73,6 @@ func Create(name string) error {
 	return nil
 }
 
-type SchemaMigrations struct {
-	Version string `gorm:"primaryKey;type:varchar(255)"`
-}
-
 func Init(db *gorm.DB) *Migrator {
 	MigratorInstance.db = db
 
@@ -107,11 +104,7 @@ func (m *Migrator) Up(step int) error {
 
 	count := 0
 
-	keys := []string{}
-	for k := range m.Migrations {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := getSortedMigrationKeys(m.Migrations)
 
 	for _, key := range keys {
 		if step > 0 && count == step {
@@ -153,11 +146,7 @@ func (m *Migrator) Down(step int) error {
 
 	count := 0
 
-	keys := []string{}
-	for key := range m.Migrations {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
+	keys := getSortedMigrationKeys(m.Migrations)
 
 	for i := len(keys) - 1; i >= 0; i-- {
 		if step > 0 && count == step {
@@ -192,14 +181,27 @@ func (m *Migrator) Down(step int) error {
 
 func (m *Migrator) MigrationStatus() error {
 
-	for v, mg := range m.Migrations {
+	keys := getSortedMigrationKeys(m.Migrations)
+	for _, key := range keys {
+
+		mg := m.Migrations[key]
 
 		if mg.done {
-			logger.GlobalLogger.Info(fmt.Sprintf("Migration %s... completed", v))
+			logger.GlobalLogger.Info(fmt.Sprintf("Migration %s... completed", key))
 		} else {
-			logger.GlobalLogger.Info(fmt.Sprintf("Migration %s... pending", v))
+			logger.GlobalLogger.Info(fmt.Sprintf("Migration %s... pending", key))
 		}
 	}
 
 	return nil
+}
+
+func getSortedMigrationKeys(migrations map[string]*Migration) []string {
+	keys := []string{}
+	for key := range migrations {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	return keys
 }
