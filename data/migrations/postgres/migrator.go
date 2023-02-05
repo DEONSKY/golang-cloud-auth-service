@@ -27,7 +27,6 @@ type Migration struct {
 
 type Migrator struct {
 	db         *gorm.DB
-	Versions   []string
 	Migrations map[string]*Migration
 }
 
