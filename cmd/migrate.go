@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	migrations "github.com/forfam/authentication-service/data/migrations/postgres"
 	"github.com/forfam/authentication-service/src/config"
@@ -132,7 +131,7 @@ func init() {
 
 func ExecuteMigrationTool() {
 	if err := migrateCmd.Execute(); err != nil {
-		log.Fatalln(err.Error())
+		logger.GlobalLogger.Fatal(err.Error())
 	}
 }
 
