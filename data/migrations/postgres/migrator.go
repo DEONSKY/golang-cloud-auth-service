@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/forfam/authentication-service/src/utils/logger"
@@ -28,7 +29,7 @@ type Migrator struct {
 	Migrations map[string]*Migration
 }
 
-var migrator = &Migrator{
+var MigratorInstance = &Migrator{
 	Versions:   []string{},
 	Migrations: map[string]*Migration{},
 }
@@ -36,19 +37,6 @@ var migrator = &Migrator{
 func (m *Migrator) AddMigration(mg *Migration) {
 	// Add the migration to the hash with version as key
 	m.Migrations[mg.Version] = mg
-
-	// Insert version into versions array using insertion sort
-	index := 0
-	for index < len(m.Versions) {
-		if m.Versions[index] > mg.Version {
-			break
-		}
-		index++
-	}
-
-	m.Versions = append(m.Versions, mg.Version)
-	copy(m.Versions[index+1:], m.Versions[index:])
-	m.Versions[index] = mg.Version
 }
 
 func Create(name string) error {
@@ -56,10 +44,8 @@ func Create(name string) error {
 
 	in := struct {
 		Version string
-		Name    string
 	}{
-		Version: version,
-		Name:    name,
+		Version: version + "_" + name,
 	}
 
 	var out bytes.Buffer
@@ -89,7 +75,7 @@ type SchemaMigrations struct {
 }
 
 func Init(db *gorm.DB) *Migrator {
-	migrator.db = db
+	MigratorInstance.db = db
 
 	// Create `schema_migrations` table to remember which migrations were executed.
 	tableExists := db.Migrator().HasTable(&SchemaMigrations{})
@@ -105,12 +91,12 @@ func Init(db *gorm.DB) *Migrator {
 	// Mark the migrations as Done if it is already executed
 	for _, db_migration := range schemaMigrations {
 
-		if migrator.Migrations[db_migration.Version] != nil {
-			migrator.Migrations[db_migration.Version].done = true
+		if MigratorInstance.Migrations[db_migration.Version] != nil {
+			MigratorInstance.Migrations[db_migration.Version].done = true
 		}
 	}
 
-	return migrator
+	return MigratorInstance
 }
 
 func (m *Migrator) Up(step int) error {
@@ -119,12 +105,18 @@ func (m *Migrator) Up(step int) error {
 
 	count := 0
 
-	for _, v := range m.Versions {
+	keys := []string{}
+	for k := range m.Migrations {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
 		if step > 0 && count == step {
 			break
 		}
 
-		mg := m.Migrations[v]
+		mg := m.Migrations[key]
 
 		if mg.done {
 			continue
@@ -158,12 +150,19 @@ func (m *Migrator) Down(step int) error {
 	tx := m.db.Begin()
 
 	count := 0
-	for _, v := range reverse(m.Versions) {
+
+	keys := []string{}
+	for key := range m.Migrations {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for i := len(keys) - 1; i >= 0; i-- {
 		if step > 0 && count == step {
 			break
 		}
 
-		mg := m.Migrations[v]
+		mg := m.Migrations[keys[i]]
 
 		if !mg.done {
 			continue
@@ -189,17 +188,9 @@ func (m *Migrator) Down(step int) error {
 	return nil
 }
 
-func reverse(arr []string) []string {
-	for i := 0; i < len(arr)/2; i++ {
-		j := len(arr) - i - 1
-		arr[i], arr[j] = arr[j], arr[i]
-	}
-	return arr
-}
-
 func (m *Migrator) MigrationStatus() error {
-	for _, v := range m.Versions {
-		mg := m.Migrations[v]
+
+	for v, mg := range m.Migrations {
 
 		if mg.done {
 			logger.GlobalLogger.Info(fmt.Sprintf("Migration %s... completed", v))
