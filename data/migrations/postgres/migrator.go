@@ -125,7 +125,7 @@ func (m *Migrator) Up(step int) error {
 		schemaMigration := SchemaMigrations{Version: mg.Version}
 
 		if err := tx.Save(&schemaMigration).Error; err != nil {
-			fmt.Println("Error", mg.Version)
+			logger.GlobalLogger.Error(fmt.Sprintf("Error %s", mg.Version))
 			tx.Rollback()
 			return err
 		}
