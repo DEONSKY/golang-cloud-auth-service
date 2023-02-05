@@ -1,12 +1,13 @@
-package cmd
+package main
 
 import (
 	"fmt"
-
 	"log"
 
 	migrations "github.com/forfam/authentication-service/data/migrations/postgres"
 	"github.com/forfam/authentication-service/src/config"
+	"github.com/forfam/authentication-service/src/utils/logger"
+
 	"github.com/spf13/cobra"
 )
 
@@ -22,14 +23,11 @@ var migrateCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "create a new empty migrations file",
 	Run: func(cmd *cobra.Command, args []string) {
-		name, err := cmd.Flags().GetString("name")
-		if err != nil {
-			fmt.Println("Unable to read flag `name`", err.Error())
-			return
-		}
+
+		name := readString(cmd, "name")
 
 		if err := migrations.Create(name); err != nil {
-			fmt.Println("Unable to create migration", err.Error())
+			logger.GlobalLogger.Fatal("Unable to create migration" + err.Error())
 			return
 		}
 	},
@@ -40,26 +38,21 @@ var migrateUpCmd = &cobra.Command{
 	Short: "run up migrations",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		step, err := cmd.Flags().GetInt("step")
-		if err != nil {
-			fmt.Println("Unable to read flag `step`")
-			return
-		}
+		step := readInt(cmd, "step")
 
 		db, err := config.SetupDatabaseConnection()
+		if err != nil {
+			logger.GlobalLogger.Fatal("Something went wrong while database connection")
+			return
+		}
 
 		migrator := migrations.Init(db)
 		if err != nil {
-			fmt.Println("Unable to fetch migrator")
+			logger.GlobalLogger.Fatal("Unable to fetch migrator")
 			return
 		}
 
-		err = migrator.Up(step)
-		if err != nil {
-			fmt.Println("Unable to run `up` migrations")
-			return
-		}
-
+		migrator.Up(step)
 	},
 }
 
@@ -68,25 +61,22 @@ var migrateDownCmd = &cobra.Command{
 	Short: "run down migrations",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		step, err := cmd.Flags().GetInt("step")
-		if err != nil {
-			fmt.Println("Unable to read flag `step`")
-			return
-		}
+		step := readInt(cmd, "step")
 
 		db, err := config.SetupDatabaseConnection()
 
-		migrator := migrations.Init(db)
 		if err != nil {
-			fmt.Println("Unable to fetch migrator")
+			logger.GlobalLogger.Fatal("Something went wrong while database connection")
 			return
 		}
 
-		err = migrator.Down(step)
+		migrator := migrations.Init(db)
 		if err != nil {
-			fmt.Println("Unable to run `down` migrations")
+			logger.GlobalLogger.Fatal("Unable to fetch migrator")
 			return
 		}
+
+		migrator.Down(step)
 	},
 }
 
@@ -97,18 +87,34 @@ var migrateStatusCmd = &cobra.Command{
 		db, err := config.SetupDatabaseConnection()
 
 		if err != nil {
-			fmt.Println("Unable to fetch migration status")
+			logger.GlobalLogger.Fatal("Unable to fetch migration status")
 		}
 
 		migrator := migrations.Init(db)
 
 		if err := migrator.MigrationStatus(); err != nil {
-			fmt.Println("Unable to fetch migration status")
+			logger.GlobalLogger.Fatal("Unable to fetch migration status")
 			return
 		}
 
 		return
 	},
+}
+
+func readInt(cmd *cobra.Command, key string) int {
+	val, err := cmd.Flags().GetInt(key)
+	if err != nil {
+		logger.GlobalLogger.Fatal(fmt.Sprintf("Missing flag `%s`", key))
+	}
+	return val
+}
+
+func readString(cmd *cobra.Command, key string) string {
+	val, err := cmd.Flags().GetString(key)
+	if err != nil {
+		logger.GlobalLogger.Fatal(fmt.Sprintf("Missing flag `%s`", key))
+	}
+	return val
 }
 
 func init() {
@@ -128,4 +134,8 @@ func ExecuteMigrationTool() {
 	if err := migrateCmd.Execute(); err != nil {
 		log.Fatalln(err.Error())
 	}
+}
+
+func main() {
+	ExecuteMigrationTool()
 }

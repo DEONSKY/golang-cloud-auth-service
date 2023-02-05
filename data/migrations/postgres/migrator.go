@@ -40,12 +40,14 @@ func (m *Migrator) AddMigration(mg *Migration) {
 }
 
 func Create(name string) error {
-	version := time.Now().Format("20060102150405")
+	time := time.Now().Format("20060102150405")
+
+	version := time + "_" + name
 
 	in := struct {
 		Version string
 	}{
-		Version: version + "_" + name,
+		Version: version,
 	}
 
 	var out bytes.Buffer
@@ -56,7 +58,7 @@ func Create(name string) error {
 		return errors.New("Unable to execute template:" + err.Error())
 	}
 
-	f, err := os.Create(fmt.Sprintf("./data/migrations/postgres/%s_%s.go", version, name))
+	f, err := os.Create(fmt.Sprintf("./data/migrations/postgres/%s.go", version))
 	if err != nil {
 		return errors.New("Unable to create migration file:" + err.Error())
 	}
@@ -66,7 +68,7 @@ func Create(name string) error {
 		return errors.New("Unable to write to migration file:" + err.Error())
 	}
 
-	logger.GlobalLogger.Info("Generated new migration files...")
+	logger.GlobalLogger.Info(fmt.Sprintf("Generated new migration file with name: %s", version))
 	return nil
 }
 
