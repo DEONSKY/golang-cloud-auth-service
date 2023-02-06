@@ -52,7 +52,7 @@ func Create(name string) error {
 
 	var out bytes.Buffer
 
-	t := template.Must(template.ParseFiles("./data/migrations/postgres/template.txt"))
+	t := template.Must(template.ParseFiles("./cmd/postgres/service/template.txt"))
 	err := t.Execute(&out, in)
 	if err != nil {
 		return errors.New("Unable to execute template:" + err.Error())

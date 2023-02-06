@@ -134,7 +134,3 @@ func ExecuteMigrationTool() {
 		logger.GlobalLogger.Fatal(err.Error())
 	}
 }
-
-func main() {
-	ExecuteMigrationTool()
-}
