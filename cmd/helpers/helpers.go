@@ -1,4 +1,4 @@
-package cmdHelper
+package helpers
 
 import (
 	"fmt"
@@ -11,17 +11,20 @@ import (
 
 var log *logger.Logger
 
-func ParseFlag(cmd *cobra.Command, key string, isOptional bool) (string, error) {
+func ParseFlag(cmd *cobra.Command, key string, isRequired bool) (string, error) {
 	val, err := cmd.Flags().GetString(key)
-	if err != nil && isOptional == false {
+	if err != nil && isRequired == true {
 		log.Fatal(fmt.Sprintf(`Something went wrong while parsing "%s" flag. `, key, err))
+	} else if len(val) == 0 && isRequired == true {
+		log.Fatal(fmt.Sprintf(`Missing parameter "%s"!`, key))
 	}
+
 	return val, err
 }
 
-func ParseIntFlag(cmd *cobra.Command, key string, isOptional bool) (int, error) {
-	val, err := ParseFlag(cmd, key, isOptional)
-	if err != nil && isOptional == true {
+func ParseIntFlag(cmd *cobra.Command, key string, isRequired bool) (int, error) {
+	val, err := ParseFlag(cmd, key, isRequired)
+	if err != nil && isRequired == false {
 		return 0, nil
 	}
 

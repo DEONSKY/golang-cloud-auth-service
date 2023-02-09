@@ -20,7 +20,11 @@ func init() {
 }
 
 func main() {
-	mainCommand.AddCommand(postgresCommands.MigrateCommand)
+	mainCommand.AddCommand(
+		postgresCommands.CreateMigrationCommand,
+		postgresCommands.MigrateCommand,
+		postgresCommands.MigrateUndoCommand,
+	)
 	if err := mainCommand.Execute(); err != nil {
 		log.Fatal("Something went wrong while running command!")
 	}
