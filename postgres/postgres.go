@@ -6,9 +6,9 @@ import (
 
 var AuthenticationDb *gorm.DB
 
-// func init() {
-// 	AuthenticationDb = New(
-// 		GetAuthenticationDbConfig(),
-// 		&gorm.Config{},
-// 	)
-// }
+func InitAuthenticationDb() {
+	AuthenticationDb = New(
+		GetAuthenticationDbConfig(),
+		&gorm.Config{},
+	)
+}

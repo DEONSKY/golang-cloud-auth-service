@@ -1,24 +1,14 @@
 Example empty migration creation
 ```sh
-go run cmd/migrate.go create -n example_migration
+go run cmd/cmd.go psql:migration-create -n dummy_one_create
 ```
 
-Run all migrations
+Migrate specific migration
 ```sh
-go run cmd/migrate.go up  
+go run cmd/cmd.go psql:migrate -n 20230210014853_dummy_one_create  
 ```
 
-Run next uncommited 2 migration
+Undo specific migration
 ```sh
-go run cmd/migrate.go up --step=2
-```
-
-Undo last committed 1 migration
-```sh
-go run cmd/migrate.go up --step=1
-```
-
-Show all migrations status
-```sh
-go run cmd/migrate.go status
+go run cmd/cmd.go psql:migrate-undo -n 20230210014853_dummy_one_create
 ```

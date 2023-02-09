@@ -13,7 +13,7 @@ func mig_{{.Name}}_down(transaction *gorm.DB) error {
 }
 
 func init() {
-  append(Migrations, &Migration{
+  	Migrations = append(Migrations, PostgresMigration{
 		Name: "{{.Name}}",
 		Up:   mig_{{.Name}}_up,
 		Down: mig_{{.Name}}_down,

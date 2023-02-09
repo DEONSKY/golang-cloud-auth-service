@@ -27,7 +27,16 @@ var MigrateUndoCommand = &cobra.Command{
 		}
 
 		transaction := db.Begin()
-		migration.Down(db)
+
+		if err := migration.Down(transaction); err != nil {
+			transaction.Rollback()
+			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" removing migration`, migration.Name, err))
+		}
+
+		if err := unmarkMigrationUndone(transaction, migration.Name); err != nil {
+			transaction.Rollback()
+			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" removing migration`, migration.Name, err))
+		}
 		transaction.Commit()
 	},
 }

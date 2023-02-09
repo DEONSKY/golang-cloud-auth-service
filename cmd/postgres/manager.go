@@ -20,6 +20,10 @@ func markMigrationMigrated(transaction *gorm.DB, name string) error {
 	return transaction.Create(&MigrationSchema{name}).Error
 }
 
+func unmarkMigrationUndone(transaction *gorm.DB, name string) error {
+	return transaction.Delete(&MigrationSchema{name}).Error
+}
+
 func findMigration(name string) *migrations.PostgresMigration {
 	for _, v := range migrations.Migrations {
 		if v.Name == name {

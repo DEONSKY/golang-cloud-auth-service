@@ -56,7 +56,7 @@ func (db *issueConnection) GetIssues(issueGetQuery *request.IssueGetQuery, userI
 Insert Association
 
 ```go
-func (db *issueConnection) InsertDependentIssueAssociation(issue model.Issue, dependentIssue model.Issue) (*model.Issue, error) {
+func InsertDependentIssueAssociation(issue model.Issue, dependentIssue model.Issue) (*model.Issue, error) {
 	if err := config.DB.Model(&issue).Omit("DependentIssues.*").Association("DependentIssues").Append(&dependentIssue); err != nil {
 		return nil, err
 	}

@@ -27,7 +27,6 @@ var MigrateCommand = &cobra.Command{
 		transaction := db.Begin()
 		for _, migration := range migrations.Migrations {
 			isExecuted := isMigrationExecuted(executeds, migration.Name)
-
 			if isExecuted == false {
 				if len(name) > 0 {
 					if name == migration.Name {
