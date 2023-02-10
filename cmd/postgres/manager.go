@@ -20,7 +20,7 @@ func markMigrationMigrated(transaction *gorm.DB, name string) error {
 	return transaction.Create(&MigrationSchema{name}).Error
 }
 
-func unmarkMigrationUndone(transaction *gorm.DB, name string) error {
+func unmarkMigrationMigrated(transaction *gorm.DB, name string) error {
 	return transaction.Delete(&MigrationSchema{name}).Error
 }
 

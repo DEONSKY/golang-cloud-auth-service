@@ -30,12 +30,12 @@ var MigrateUndoCommand = &cobra.Command{
 
 		if err := migration.Down(transaction); err != nil {
 			transaction.Rollback()
-			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" removing migration`, migration.Name, err))
+			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
 		}
 
-		if err := unmarkMigrationUndone(transaction, migration.Name); err != nil {
+		if err := unmarkMigrationMigrated(transaction, migration.Name); err != nil {
 			transaction.Rollback()
-			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" removing migration`, migration.Name, err))
+			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
 		}
 		transaction.Commit()
 	},

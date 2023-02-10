@@ -7,7 +7,7 @@ type IssueKanbanResponse struct {
 }
 
 type IssueResponse struct {
-	ID uint64 `json:"id"`
+	ID string `json:"id"`
 	StatusID uint32 `json:"statusID"`
 	Status StatusResponse `gorm:"-" json:"status"`
 	Reporter UserLabelResponse `json:"reporter"`
@@ -17,9 +17,9 @@ type IssueResponse struct {
 }
 
 type LeafIssueResponse struct {
-	ID uint64 `json:"id"`
+	ID string `json:"id"`
 	Reporter UserLabelResponse `json:"reporter"`
-	AssignieID *uint64 `json:"assignieID"`
+	AssignieID *string `json:"assignieID"`
 	Assignie *UserLabelResponse `json:"assignie"`
 }
 
@@ -31,8 +31,8 @@ func (LeafIssueResponse) TableName() string {
 
 type IssueCommentResponse struct {
 	Context string `json:"context"`
-	IssueID uint64 `json:"issueID"`
-	CreatorID uint64 `json:"-"`
+	IssueID string `json:"issueID"`
+	CreatorID string `json:"-"`
 }
 
 func (IssueCommentResponse) TableName() string {
@@ -50,7 +50,7 @@ func (UserLabelResponse) TableName() string {
 }
 
 type UserLabelResponse struct {
-	ID uint64 `json:"id"`
+	ID string `json:"id"`
 	Name string `json:"name"`
 	ProfilePictureURL string `json:"profilePictureURL"`
 }
@@ -58,7 +58,7 @@ type UserLabelResponse struct {
 
 ```go
 type SubjectNavTreeResponse struct {
-	ID          uint64 `json:"id"`
+	ID          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	ProjectID   uint64 `json:"project_id"`
@@ -67,7 +67,7 @@ type SubjectNavTreeResponse struct {
 
 ```go
 type IssueGetQuery struct {
-	SubjectID      *uint64 `query:"subjectID"`
+	SubjectID      *string `query:"subjectID"`
 	ProjectID      *uint64 `query:"projectID"`
 	ReporterID     *uint64 `query:"reporterID"`
 	AssignieID     *uint64 `query:"assignieID"`

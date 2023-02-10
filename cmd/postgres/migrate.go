@@ -25,38 +25,55 @@ var MigrateCommand = &cobra.Command{
 		migrations.Sort()
 
 		transaction := db.Begin()
-		for _, migration := range migrations.Migrations {
-			isExecuted := isMigrationExecuted(executeds, migration.Name)
-			if isExecuted == false {
-				if len(name) > 0 {
-					if name == migration.Name {
-						if err := migration.Up(transaction); err != nil {
-							transaction.Rollback()
-							log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
-						}
 
-						if err := markMigrationMigrated(transaction, migration.Name); err != nil {
-							transaction.Rollback()
-							log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
-						}
+		found := false
+
+		if len(name) > 0 {
+			for _, migration := range migrations.Migrations {
+				isExecuted := isMigrationExecuted(executeds, migration.Name)
+
+				if name == migration.Name {
+					found = true
+					if !isExecuted {
+						migrate(migration, transaction)
+						continue
 					} else {
-						return
+						log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
+						continue
 					}
-				} else {
-					if err := migration.Up(transaction); err != nil {
-						transaction.Rollback()
-						log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
-					}
-					if err := markMigrationMigrated(transaction, migration.Name); err != nil {
-						transaction.Rollback()
-						log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
-					}
+				}
+			}
+		} else {
+			for _, migration := range migrations.Migrations {
+				isExecuted := isMigrationExecuted(executeds, migration.Name)
+				found = true
+
+				if !isExecuted {
+					migrate(migration, transaction)
 				}
 			}
 		}
 
+		if !found {
+			log.Warning(fmt.Sprintf(
+				`Migration not found "%s". Please check migration name exists in declared migrations folder`,
+				name))
+		}
+
 		transaction.Commit()
 	},
+}
+
+func migrate(migration migrations.PostgresMigration, transaction *gorm.DB) {
+	if err := migration.Up(transaction); err != nil {
+		transaction.Rollback()
+		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
+	}
+
+	if err := markMigrationMigrated(transaction, migration.Name); err != nil {
+		transaction.Rollback()
+		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
+	}
 }
 
 func init() {

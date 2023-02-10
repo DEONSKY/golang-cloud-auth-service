@@ -2,7 +2,7 @@
 
 //User represents users table in database
 type User struct {
-	ID                uint64         `gorm:"primary_key:gen_random_uuid" json:"id"`
+	ID                string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey`
 	Name              string         `gorm:"type:varchar(255)" json:"name"`
 	Email             string         `gorm:"uniqueIndex;type:varchar(255)" json:"email"`
 	ProfilePictureURL string         `gorm:"type:text" json:"profilePictureURL"`
@@ -19,7 +19,7 @@ type User struct {
 ```go
 
 type Issue struct {
-	ID              uint64         `gorm:"primary_key:gen_random_uuid" json:"id"`
+	ID              string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Title           string         `gorm:"type:varchar(255)" json:"title"`
 	Description     string         `gorm:"type:text" json:"description"`
 	IssueForeignId  string         `gorm:"type:text" json:"issueForeignId"`
@@ -45,7 +45,7 @@ type Issue struct {
 
 ```go
 type Subject struct {
-	ID           uint64         `gorm:"primary_key:gen_random_uuid" json:"id"`
+	ID           string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Title        string         `gorm:"type:varchar(255)" json:"title"`
 	Description  string         `gorm:"type:text" json:"description"`
 	RepoID       string         `gorm:"type:text" json:"repoId"`
