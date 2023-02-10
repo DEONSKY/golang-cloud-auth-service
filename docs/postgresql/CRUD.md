@@ -1,4 +1,43 @@
-Example Save Method Without Transaction
+
+## Example Save Method Without Transaction
+
+```go
+type SubjectCreateRequest struct {
+	Title        string `json:"title" form:"title" validate:"required,max=32"`
+	Description  string `json:"description" form:"description" validate:"required,max=255"`
+	ProjectID    uint64 `json:"projectID" form:"projectID" binding:"required"`
+	TeamLeaderID uint64 `json:"-" form:"teamLeaderID" binding:"required"`
+}
+```
+
+```go
+type Subject struct {
+	ID           uint64         `gorm:"primary_key:auto_increment" json:"id"`
+	Title        string         `gorm:"type:varchar(255)" json:"title"`
+	Description  string         `gorm:"type:text" json:"description"`
+	RepoID       string         `gorm:"type:text" json:"repoId"`
+	ProjectID    uint64         `gorm:"not null" json:"-"`
+	Project      Project        `gorm:"foreignkey:ProjectID;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
+	Issues       []Issue        `json:"-"`
+	Stages       []Stage        `gorm:"foreignkey:id;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
+	User         []User         `gorm:"many2many:SubjectUser;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
+	TeamLeaderID uint64         `gorm:"not null" json:"-"`
+	TeamLeader   User           `gorm:"foreignkey:TeamLeaderID;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
+	CreatedAt    time.Time      `json:"createdAt"`
+	UpdatedAt    time.Time      `json:"updatedAt"`
+	DeletedAt    gorm.DeletedAt `json:"-"`
+}
+```
+
+We are mapping SubjectCreateRequest dto to Subject model inside service
+
+```go
+	subjectToCreate := model.Subject{}
+	err := smapping.FillStruct(&subjectToCreate, smapping.MapFields(&subjectCreateDTO))
+```
+
+After that we are giving our repository for create process
+
 ```go
 func InsertSubject(subject model.Subject) (*model.Subject, error) {
 
@@ -9,15 +48,25 @@ func InsertSubject(subject model.Subject) (*model.Subject, error) {
 }
 ```
 
-Basic Get Method
+## Basic Get Method
+
 ```go
-func GetSubjectsByUserId(userID uint64) ([]response.SubjectNavTreeResponse, error) {
+type SubjectNavTreeResponse struct {
+	Id          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	ProjectId   string `json:"project_id"`
+}
+```
+
+```go
+func GetSubjectsByUserId(userId string) ([]response.SubjectNavTreeResponse, error) {
 
 	var subjectNavTreeResponse []response.SubjectNavTreeResponse
 
 	if result := config.DB.Model(&model.Subject{}).
 		Joins("INNER JOIN subject_users su on su.subject_id = id").
-		Where("su.user_id", userID).Order("ID").Find(&subjectNavTreeResponse); result.Error != nil {
+		Where("su.user_id", userId).Order("Id").Find(&subjectNavTreeResponse); result.Error != nil {
 		return nil, result.Error
 	}
 	return subjectNavTreeResponse, nil
@@ -25,35 +74,58 @@ func GetSubjectsByUserId(userID uint64) ([]response.SubjectNavTreeResponse, erro
 }
 ```
 
+## Dynamic query creation with output complex nested dto by chaining
 
-Dynamic query creation with output complex nested dto by chaining
+If we are using query DTO with optional fields, repository query needs to be dynamic too
 ```go
-func (db *issueConnection) GetIssues(issueGetQuery *request.IssueGetQuery, userID uint64) ([]response.IssueResponse, error) {
+type IssueGetQuery struct {
+	SubjectId      *string `query:"subjectId"`
+	ProjectId      *string `query:"projectId"`
+	ReporterId     *string `query:"reporterId"`
+	AssignieId     *string `query:"assignieId"`
+	Status         *uint8  `query:"status"`
+	ParentIssueId  *string `query:"parentIssueId"`
+	GetOnlyOrphans *bool   `query:"getOnlyOrphans"`
+}
+```
+
+```go
+func GetIssues(issueGetQuery *request.IssueGetQuery, userId string) ([]response.IssueResponse, error) {
 
 	var issues []response.IssueResponse
 	chain := config.DB.Model(&model.Issue{}).
-	Preload("ChildIssues").//Loads child entity
-	Preload("DependentIssues").
-	Preload("Assignie").
-	Preload("Reporter").
-	Joins("INNER JOIN subjects s on subject_id = s.id").
-	Joins("INNER JOIN subject_users su on su.subject_id = s.id").
-	Where("user_id", userID)
+		Preload("ChildIssues").//Loads child entity
+		Preload("DependentIssues").
+		Preload("Assignie").
+		Preload("Reporter").
+		Joins("INNER JOIN subjects s on subject_id = s.id").
+		Joins("INNER JOIN subject_users su on su.subject_id = s.id").
+		Where("user_id", userId)
 	
 	//Optional Find Clause
-	if issueGetQuery.ReporterID != nil {
-		chain = chain.Where("reporter_id", issueGetQuery.ReporterID)
+	if issueGetQuery.ReporterId != nil {
+		chain = chain.Where("reporter_id", issueGetQuery.ReporterId)
 	}
-
 
 	if result := chain.Find(&issues); result.Error != nil {
 		return nil, result.Error
 	}
+
 	return issues, nil
 }
 ```
 
-Insert Association
+## Insert Association
+
+In this example We are claiming required model from our another repositories
+
+```go
+	issue, err := service.issueRepository.FindIssueByAccess(issueID, userID)
+```
+
+```go
+	dependentIssue, err := service.issueRepository.FindIssueByAccess(dependentIssueID, userID)
+```
 
 ```go
 func InsertDependentIssueAssociation(issue model.Issue, dependentIssue model.Issue) (*model.Issue, error) {
@@ -71,7 +143,7 @@ func UpdateUser(user model.User) model.User {
 		user.Password = hashAndSalt([]byte(user.Password))
 	} else {
 		var tempUser model.User
-		config.DB.Find(&tempUser, user.ID)
+		config.DB.Find(&tempUser, user.Id)
 		user.Password = tempUser.Password
 	}
 	config.DB.Save(&user)
@@ -79,10 +151,10 @@ func UpdateUser(user model.User) model.User {
 }
 ```
 
+## Using transactions with querys
 
 With gorm create, update, delete  methods has transactions as default.
 But we can create transactions like this:
-
 ```go
 db.Transaction(func(tx *gorm.DB) error {  
 	// do some database operations in the transaction (use 'tx' from this point, not 'db')  

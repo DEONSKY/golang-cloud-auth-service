@@ -48,6 +48,7 @@ func GetExecutedMigrations(db *gorm.DB) []MigrationSchema {
 	createTable(db)
 	var executedMigrations []MigrationSchema
 	db.Model(&MigrationSchema{}).Find(&executedMigrations)
+	migrations.Sort()
 
 	return executedMigrations
 }

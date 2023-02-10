@@ -22,32 +22,27 @@ var MigrateCommand = &cobra.Command{
 		)
 
 		executeds := GetExecutedMigrations(db)
-		migrations.Sort()
 
 		transaction := db.Begin()
 
 		found := false
 
-		if len(name) > 0 {
-			for _, migration := range migrations.Migrations {
-				isExecuted := isMigrationExecuted(executeds, migration.Name)
+		for _, migration := range migrations.Migrations {
+			isExecuted := isMigrationExecuted(executeds, migration.Name)
 
+			if len(name) > 0 {
 				if name == migration.Name {
 					found = true
 					if !isExecuted {
 						migrate(migration, transaction)
 						continue
-					} else {
-						log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
-						continue
 					}
-				}
-			}
-		} else {
-			for _, migration := range migrations.Migrations {
-				isExecuted := isMigrationExecuted(executeds, migration.Name)
-				found = true
 
+					log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
+					continue
+				}
+			} else {
+				found = true
 				if !isExecuted {
 					migrate(migration, transaction)
 				}

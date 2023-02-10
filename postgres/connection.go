@@ -6,11 +6,7 @@ import (
 
 	psql "gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"github.com/forfam/authentication-service/src/utils/logger"
 )
-
-var log *logger.Logger
 
 type DbConnectionOptions struct {
 	Host                   string
@@ -65,8 +61,4 @@ func New(options *DbConnectionOptions, config *gorm.Config) *gorm.DB {
 	)
 
 	return connectWithRetry(connectionUri, config, options.MaxRetryCount, options.ConnectionRetryTimeout)
-}
-
-func init() {
-	log = logger.New("AUTHENTICATION_SERVICE", "PostgresConnection")
 }

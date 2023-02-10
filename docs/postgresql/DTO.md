@@ -1,26 +1,26 @@
-
 Also we may need to make changes on the for using associations with dto
+
 ```go
 type IssueKanbanResponse struct {
-	Status StatusResponse `json:"status"`
-	Issues []IssueResponse `json:"issues"`
+	Status StatusResponse	`json:"status"`
+	Issues []IssueResponse 	`json:"issues"`
 }
 
 type IssueResponse struct {
-	ID string `json:"id"`
-	StatusID uint32 `json:"statusID"`
-	Status StatusResponse `gorm:"-" json:"status"`
-	Reporter UserLabelResponse `json:"reporter"`
-	Assignie *UserLabelResponse `json:"assignie"`
-	ChildIssues []*LeafIssueResponse `gorm:"foreignkey:ParentIssueID;" json:"issues"`
-	DependentIssues []*LeafIssueResponse `gorm:"many2many:DependentIssues;foreignkey:ID;joinForeignKey:issueID;References:ID;joinReferences:dependentIssueID" json:"dependentIssues"`
+	Id 				string 					`json:"id"`
+	StatusId 		uint32 					`json:"statusId"`
+	Status 			StatusResponse 			`gorm:"-" json:"status"`
+	Reporter 		UserLabelResponse 		`json:"reporter"`
+	Assignie 		*UserLabelResponse 		`json:"assignie"`
+	ChildIssues 	[]*LeafIssueResponse 	`gorm:"foreignkey:ParentIssueId;" json:"issues"`
+	DependentIssues []*LeafIssueResponse 	`gorm:"many2many:DependentIssues;foreignkey:Id;joinForeignKey:issueId;References:Id;	joinReferences:dependentIssueId" json:"dependentIssues"`
 }
 
 type LeafIssueResponse struct {
-	ID string `json:"id"`
-	Reporter UserLabelResponse `json:"reporter"`
-	AssignieID *string `json:"assignieID"`
-	Assignie *UserLabelResponse `json:"assignie"`
+	Id 			string 				`json:"id"`
+	Reporter 	UserLabelResponse 	`json:"reporter"`
+	AssignieId 	*string 			`json:"assignieId"`
+	Assignie 	*UserLabelResponse 	`json:"assignie"`
 }
 
 // TableName overrides the table name for smart select
@@ -30,9 +30,9 @@ func (LeafIssueResponse) TableName() string {
 }
 
 type IssueCommentResponse struct {
-	Context string `json:"context"`
-	IssueID string `json:"issueID"`
-	CreatorID string `json:"-"`
+	Context 	string 	`json:"context"`
+	IssueId 	string 	`json:"issueId"`
+	CreatorId 	string 	`json:"-"`
 }
 
 func (IssueCommentResponse) TableName() string {
@@ -40,8 +40,8 @@ func (IssueCommentResponse) TableName() string {
 }
 
 type StatusResponse struct {
-	ID uint32
-	Title string
+	Id 		string
+	Title 	string
 	HexCode string
 }
 
@@ -50,29 +50,29 @@ func (UserLabelResponse) TableName() string {
 }
 
 type UserLabelResponse struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
-	ProfilePictureURL string `json:"profilePictureURL"`
+	Id 					string 	`json:"id"`
+	Name 				string 	`json:"name"`
+	ProfilePictureURL 	string 	`json:"profilePictureURL"`
 }
 ```
 
 ```go
 type SubjectNavTreeResponse struct {
-	ID          string `json:"id"`
+	Id          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	ProjectID   uint64 `json:"project_id"`
+	ProjectId   string `json:"project_id"`
 }
 ```
 
 ```go
 type IssueGetQuery struct {
-	SubjectID      *string `query:"subjectID"`
-	ProjectID      *uint64 `query:"projectID"`
-	ReporterID     *uint64 `query:"reporterID"`
-	AssignieID     *uint64 `query:"assignieID"`
+	SubjectId      *string `query:"subjectId"`
+	ProjectId      *string `query:"projectId"`
+	ReporterId     *string `query:"reporterId"`
+	AssignieId     *string `query:"assignieId"`
 	Status         *uint8  `query:"status"`
-	ParentIssueID  *uint64 `query:"parentIssueID"`
+	ParentIssueId  *string `query:"parentIssueId"`
 	GetOnlyOrphans *bool   `query:"getOnlyOrphans"`
 }
 ```

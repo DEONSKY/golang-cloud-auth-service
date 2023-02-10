@@ -27,18 +27,18 @@ func createMigration(name string) string {
 	templateRunner := template.Must(template.ParseFiles(templatePath))
 	err := templateRunner.Execute(&fileBuffer, templateData)
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Something went wrong while try to parse template file!", err))
+		log.Fatal(fmt.Sprintf(`Something went wrong while try to parse template file!`, err))
 	}
 
-	file, err := os.Create(fmt.Sprintf("./data/migrations/postgres/%s.go", cleanedMigrationName))
+	file, err := os.Create(fmt.Sprintf(`./data/migrations/postgres/%s.go`, cleanedMigrationName))
 	if err != nil {
-		log.Fatal(fmt.Sprintf("Something went wrong while try to create migration file!", err))
+		log.Fatal(fmt.Sprintf(`Something went wrong while try to create migration file!`, err))
 	}
 
 	defer file.Close()
 
 	if _, err := file.WriteString(fileBuffer.String()); err != nil {
-		log.Fatal(fmt.Sprintf("Something went wrong while try to write migration file!", err))
+		log.Fatal(fmt.Sprintf(`Something went wrong while try to write migration file!`, err))
 	}
 
 	return cleanedMigrationName
@@ -51,13 +51,13 @@ var CreateMigrationCommand = &cobra.Command{
 		name, err := helpers.ParseFlag(cmd, "name", false)
 
 		if err != nil {
-			log.Fatal("Something went wrong while claiming requeired `name` argument")
+			log.Fatal(`Something went wrong while claiming requeired 'name' argument`)
 			return
 		}
 
 		migrationName := createMigration(name)
 
-		log.Info(fmt.Sprintf("Migration %s created successfully!", migrationName))
+		log.Info(fmt.Sprintf(`Migration %s created successfully`, migrationName))
 	},
 }
 
