@@ -55,9 +55,7 @@ var MigrateCommand = &cobra.Command{
 		}
 
 		if !found {
-			log.Warning(fmt.Sprintf(
-				`Migration not found "%s". Please check migration name exists in declared migrations folder`,
-				name))
+			log.Warning(fmt.Sprintf(`Migration not found "%s". Please check migration name exists in declared migrations folder`, name))
 		}
 
 		transaction.Commit()
