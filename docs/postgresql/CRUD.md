@@ -3,29 +3,29 @@
 
 ```go
 type SubjectCreateRequest struct {
-	Title        string `json:"title" form:"title" validate:"required,max=32"`
-	Description  string `json:"description" form:"description" validate:"required,max=255"`
-	ProjectId    uint64 `json:"projectId" form:"projectId" binding:"required"`
-	TeamLeaderId uint64 `json:"-" form:"teamLeaderId" binding:"required"`
+	Title        string `form:"title" validate:"required,max=32"`
+	Description  string `form:"description" validate:"required,max=255"`
+	ProjectId    uint64 `form:"projectId" binding:"required"`
+	TeamLeaderId uint64 `form:"teamLeaderId" binding:"required"`
 }
 ```
 
 ```go
 type Subject struct {
-	Id           uint64         `gorm:"primary_key:auto_increment" json:"id"`
-	Title        string         `gorm:"type:varchar(255)" json:"title"`
-	Description  string         `gorm:"type:text" json:"description"`
-	RepoId       string         `gorm:"type:text" json:"repoId"`
-	ProjectId    uint64         `gorm:"not null" json:"-"`
-	Project      Project        `gorm:"foreignkey:ProjectId;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
-	Issues       []Issue        `json:"-"`
-	Stages       []Stage        `gorm:"foreignkey:id;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
-	User         []User         `gorm:"many2many:SubjectUser;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
-	TeamLeaderId uint64         `gorm:"not null" json:"-"`
-	TeamLeader   User           `gorm:"foreignkey:TeamLeaderId;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
-	CreatedAt    time.Time      `json:"createdAt"`
-	UpdatedAt    time.Time      `json:"updatedAt"`
-	DeletedAt    gorm.DeletedAt `json:"-"`
+	Id           uint64         `gorm:"primary_key:auto_increment"`
+	Title        string         `gorm:"type:varchar(255)"`
+	Description  string         `gorm:"type:text"`
+	RepoId       string         `gorm:"type:text"`
+	ProjectId    uint64         `gorm:"not null"`
+	Project      Project        `gorm:"foreignkey:ProjectId;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
+	Issues       []Issue
+	Stages       []Stage        `gorm:"foreignkey:id;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
+	User         []User         `gorm:"many2many:SubjectUser;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
+	TeamLeaderId uint64         `gorm:"not null"`
+	TeamLeader   User           `gorm:"foreignkey:TeamLeaderId;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    gorm.DeletedAt
 }
 ```
 
@@ -52,10 +52,10 @@ func InsertSubject(subject model.Subject) (*model.Subject, error) {
 
 ```go
 type SubjectNavTreeResponse struct {
-	Id          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	ProjectId   string `json:"project_id"`
+	Id          string
+	Title       string
+	Description string
+	ProjectId   string
 }
 ```
 
