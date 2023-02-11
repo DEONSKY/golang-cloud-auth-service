@@ -7,6 +7,7 @@ require (
 	github.com/fatih/color v1.14.1
 	github.com/gofiber/fiber/v2 v2.41.0
 	github.com/google/uuid v1.3.0
+	github.com/gosimple/slug v1.13.1
 	github.com/joho/godotenv v1.4.0
 	github.com/spf13/cobra v1.6.1
 	gorm.io/driver/postgres v1.4.6
@@ -15,7 +16,6 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
-	github.com/gosimple/slug v1.13.1 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

@@ -1,8 +1,6 @@
 package postgres
 
 import (
-	"sort"
-
 	"gorm.io/gorm"
 
 	migrations "github.com/forfam/authentication-service/data/migrations/postgres"
@@ -49,17 +47,6 @@ func isMigrationExecuted(executeds []MigrationSchema, name string) bool {
 func GetExecutedMigrations(db *gorm.DB) []MigrationSchema {
 	createTable(db)
 	var executedMigrations []MigrationSchema
-	db.Model(&MigrationSchema{}).Find(&executedMigrations)
-	SortMigrationSchemas(executedMigrations)
+	db.Model(&MigrationSchema{}).Order("name").Find(&executedMigrations)
 	return executedMigrations
-}
-
-type ByName []MigrationSchema
-
-func (a ByName) Len() int           { return len(a) }
-func (a ByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ByName) Less(i, j int) bool { return a[i].Name < a[j].Name }
-
-func SortMigrationSchemas(migrations []MigrationSchema) {
-	sort.Sort(ByName(migrations))
 }
