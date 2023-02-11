@@ -55,6 +55,7 @@ var MigrateCommand = &cobra.Command{
 			} else {
 				log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
 			}
+
 		} else {
 			for _, migration := range migrations.Migrations {
 				isExecuted := isMigrationExecuted(executeds, migration.Name)

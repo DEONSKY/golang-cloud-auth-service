@@ -26,8 +26,8 @@ func main() {
 		postgresCommands.MigrateUndoCommand,
 	)
 	if err := mainCommand.Execute(); err != nil {
-		log.Fatal("Something went wrong while running command!")
+		log.Fatal(`Something went wrong while running command!`)
 	}
 
-	log.Info("Command runned successfully!")
+	log.Info(`Command runned successfully!`)
 }

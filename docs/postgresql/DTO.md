@@ -3,7 +3,7 @@ Also we may need to make changes on the for using associations with dto
 ```go
 type IssueKanbanResponse struct {
 	Status	StatusResponse	`json:"status"`
-	Issues	[]IssueResponse 	`json:"issues"`
+	Issues	[]IssueResponse	`json:"issues"`
 }
 
 type IssueResponse struct {
@@ -13,7 +13,7 @@ type IssueResponse struct {
 	Reporter 	UserLabelResponse 	`json:"reporter"`
 	Assignie 	*UserLabelResponse 	`json:"assignie"`
 	ChildIssues 	[]*LeafIssueResponse 	`gorm:"foreignkey:ParentIssueId;" json:"issues"`
-	DependentIssues []*LeafIssueResponse 	`gorm:"many2many:DependentIssues;foreignkey:Id;joinForeignKey:issueId;References:Id;	joinReferences:dependentIssueId" json:"dependentIssues"`
+	DependentIssues []*LeafIssueResponse 	`gorm:"many2many:DependentIssues;foreignkey:Id;joinForeignKey:issueId;References:Id;joinReferences:dependentIssueId" json:"dependentIssues"`
 }
 
 type LeafIssueResponse struct {
