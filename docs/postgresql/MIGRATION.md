@@ -212,7 +212,7 @@ func mig_20230210222930_subject_user_add_subject_fk_down(transaction *gorm.DB) e
 	if err := transaction.Migrator().DropConstraint(&subject_user_20230210222930{}, "fk_subject_users_subject"); err != nil {
 		return err
 	}
-	if err := transaction.Migrator().DropColumn(&subject_user_20230210222930{}, "SubjectID"); err != nil {
+	if err := transaction.Migrator().DropColumn(&subject_user_20230210222930{}, "SubjectId"); err != nil {
 		return err
 	}
 

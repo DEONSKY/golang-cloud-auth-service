@@ -2,7 +2,7 @@
 
 //User represents users table in database
 type User struct {
-	ID                string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey`
+	Id                string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey`
 	Name              string         `gorm:"type:varchar(255)"`
 	Email             string         `gorm:"uniqueIndex;type:varchar(255)"`
 	ProfilePictureURL string         `gorm:"type:text"`
@@ -19,24 +19,24 @@ type User struct {
 ```go
 
 type Issue struct {
-	ID              string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	Id              string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Title           string         `gorm:"type:varchar(255)" `
 	Description     string         `gorm:"type:text"`
 	IssueForeignId  string         `gorm:"type:text"`
 	TargetTime      uint32         
 	SpendingTime    uint32         
 	Progress        uint8          
-	SubjectID       string         `gorm:"not null"`
-	Subject         Subject        `gorm:"foreignkey:SubjectID;"`
-	ParentIssueID   *string        
-	StatusID        uint8          `gorm:"not null;default:1"`
-	ChildIssues     []Issue        `gorm:"foreignkey:ParentIssueID;"`
+	SubjectId       string         `gorm:"not null"`
+	Subject         Subject        `gorm:"foreignkey:SubjectId;"`
+	ParentIssueId   *string        
+	StatusId        uint8          `gorm:"not null;default:1"`
+	ChildIssues     []Issue        `gorm:"foreignkey:ParentIssueId;"`
 	DependentIssues []Issue        `gorm:"many2many:DependentIssues;"`
-	Comments        []IssueComment `gorm:"foreignkey:ID;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
-	ReporterID      string         `gorm:"not null"`
-	Reporter        User           `gorm:"foreignkey:ReporterID;"`
-	AssignieID      *string        
-	Assignie        User           `gorm:"foreignkey:AssignieID;"`
+	Comments        []IssueComment `gorm:"foreignkey:Id;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
+	ReporterId      string         `gorm:"not null"`
+	Reporter        User           `gorm:"foreignkey:ReporterId;"`
+	AssignieId      *string        
+	Assignie        User           `gorm:"foreignkey:AssignieId;"`
 	CreatedAt       time.Time      
 	UpdatedAt       time.Time      
 	DeletedAt       gorm.DeletedAt 
@@ -45,17 +45,17 @@ type Issue struct {
 
 ```go
 type Subject struct {
-	ID           string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
+	Id           string         `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
 	Title        string         `gorm:"type:varchar(255)"`
 	Description  string         `gorm:"type:text"`
-	RepoID       string         `gorm:"type:text"`
-	ProjectID    string         `gorm:"not null"`
-	Project      Project        `gorm:"foreignkey:ProjectID;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
+	RepoId       string         `gorm:"type:text"`
+	ProjectId    string         `gorm:"not null"`
+	Project      Project        `gorm:"foreignkey:ProjectId;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
 	Issues       []Issue        
 	Stages       []Stage        `gorm:"foreignkey:id;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
 	User         []User         `gorm:"many2many:SubjectUser;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
-	TeamLeaderID string         `gorm:"not null"`
-	TeamLeader   User           `gorm:"foreignkey:TeamLeaderID;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
+	TeamLeaderId string         `gorm:"not null"`
+	TeamLeader   User           `gorm:"foreignkey:TeamLeaderId;constraint:onUpdate:CASCADE,onDelete:CASCADE"`
 	CreatedAt    time.Time      
 	UpdatedAt    time.Time      
 	DeletedAt    gorm.DeletedAt 

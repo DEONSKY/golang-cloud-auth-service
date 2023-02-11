@@ -51,7 +51,7 @@ var CreateMigrationCommand = &cobra.Command{
 		name, err := helpers.ParseFlag(cmd, "name", false)
 
 		if err != nil {
-			log.Fatal(`Something went wrong while claiming requeired 'name' argument`)
+			log.Fatal(`Something went wrong while claiming requeired "name" argument`)
 			return
 		}
 

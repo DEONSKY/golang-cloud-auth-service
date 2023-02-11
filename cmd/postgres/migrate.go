@@ -11,6 +11,18 @@ import (
 	"github.com/forfam/authentication-service/postgres"
 )
 
+func migrate(migration migrations.PostgresMigration, transaction *gorm.DB) {
+	if err := migration.Up(transaction); err != nil {
+		transaction.Rollback()
+		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
+	}
+
+	if err := markMigrationMigrated(transaction, migration.Name); err != nil {
+		transaction.Rollback()
+		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
+	}
+}
+
 var MigrateCommand = &cobra.Command{
 	Use:   "psql:migrate",
 	Short: "Run migrations via gorm",
@@ -23,50 +35,36 @@ var MigrateCommand = &cobra.Command{
 
 		executeds := GetExecutedMigrations(db)
 
+		migrations.Sort()
+
 		transaction := db.Begin()
 
-		found := false
+		defer transaction.Commit()
 
-		for _, migration := range migrations.Migrations {
+		if len(name) > 0 {
+
+			migration := findMigration(name)
+			if migration == nil {
+				log.Warning(fmt.Sprintf(`Migration not found "%s". Please check migration name exists in declared migrations folder`, name))
+				return
+			}
+
 			isExecuted := isMigrationExecuted(executeds, migration.Name)
 
-			if len(name) > 0 {
-				if name == migration.Name {
-					found = true
-					if !isExecuted {
-						migrate(migration, transaction)
-						continue
-					}
-
-					log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
-					continue
-				}
+			if !isExecuted {
+				migrate(*migration, transaction)
 			} else {
-				found = true
-				if !isExecuted {
-					migrate(migration, transaction)
-				}
+				log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
+			}
+		}
+		for _, migration := range migrations.Migrations {
+			isExecuted := isMigrationExecuted(executeds, migration.Name)
+			if !isExecuted {
+				migrate(migration, transaction)
 			}
 		}
 
-		if !found {
-			log.Warning(fmt.Sprintf(`Migration not found "%s". Please check migration name exists in declared migrations folder`, name))
-		}
-
-		transaction.Commit()
 	},
-}
-
-func migrate(migration migrations.PostgresMigration, transaction *gorm.DB) {
-	if err := migration.Up(transaction); err != nil {
-		transaction.Rollback()
-		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
-	}
-
-	if err := markMigrationMigrated(transaction, migration.Name); err != nil {
-		transaction.Rollback()
-		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
-	}
 }
 
 func init() {

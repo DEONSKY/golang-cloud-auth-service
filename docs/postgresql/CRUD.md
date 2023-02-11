@@ -5,24 +5,24 @@
 type SubjectCreateRequest struct {
 	Title        string `json:"title" form:"title" validate:"required,max=32"`
 	Description  string `json:"description" form:"description" validate:"required,max=255"`
-	ProjectID    uint64 `json:"projectID" form:"projectID" binding:"required"`
-	TeamLeaderID uint64 `json:"-" form:"teamLeaderID" binding:"required"`
+	ProjectId    uint64 `json:"projectId" form:"projectId" binding:"required"`
+	TeamLeaderId uint64 `json:"-" form:"teamLeaderId" binding:"required"`
 }
 ```
 
 ```go
 type Subject struct {
-	ID           uint64         `gorm:"primary_key:auto_increment" json:"id"`
+	Id           uint64         `gorm:"primary_key:auto_increment" json:"id"`
 	Title        string         `gorm:"type:varchar(255)" json:"title"`
 	Description  string         `gorm:"type:text" json:"description"`
-	RepoID       string         `gorm:"type:text" json:"repoId"`
-	ProjectID    uint64         `gorm:"not null" json:"-"`
-	Project      Project        `gorm:"foreignkey:ProjectID;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
+	RepoId       string         `gorm:"type:text" json:"repoId"`
+	ProjectId    uint64         `gorm:"not null" json:"-"`
+	Project      Project        `gorm:"foreignkey:ProjectId;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
 	Issues       []Issue        `json:"-"`
 	Stages       []Stage        `gorm:"foreignkey:id;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
 	User         []User         `gorm:"many2many:SubjectUser;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
-	TeamLeaderID uint64         `gorm:"not null" json:"-"`
-	TeamLeader   User           `gorm:"foreignkey:TeamLeaderID;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
+	TeamLeaderId uint64         `gorm:"not null" json:"-"`
+	TeamLeader   User           `gorm:"foreignkey:TeamLeaderId;constraint:onUpdate:CASCADE,onDelete:CASCADE" json:"-"`
 	CreatedAt    time.Time      `json:"createdAt"`
 	UpdatedAt    time.Time      `json:"updatedAt"`
 	DeletedAt    gorm.DeletedAt `json:"-"`
@@ -120,11 +120,11 @@ func GetIssues(issueGetQuery *request.IssueGetQuery, userId string) ([]response.
 In this example We are claiming required model from our another repositories
 
 ```go
-	issue, err := service.issueRepository.FindIssueByAccess(issueID, userID)
+	issue, err := service.issueRepository.FindIssueByAccess(issueId, userId)
 ```
 
 ```go
-	dependentIssue, err := service.issueRepository.FindIssueByAccess(dependentIssueID, userID)
+	dependentIssue, err := service.issueRepository.FindIssueByAccess(dependentIssueId, userId)
 ```
 
 ```go

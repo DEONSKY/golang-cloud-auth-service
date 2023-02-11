@@ -15,10 +15,6 @@ var MigrateUndoCommand = &cobra.Command{
 	Short: "Undo migrations via gorm",
 	Run: func(cmd *cobra.Command, args []string) {
 		name, _ := cmdHelper.ParseFlag(cmd, "name", true)
-		db := postgres.New(
-			postgres.GetAuthenticationDbConfig(),
-			&gorm.Config{},
-		)
 
 		migration := findMigration(name)
 
@@ -26,18 +22,33 @@ var MigrateUndoCommand = &cobra.Command{
 			log.Fatal(fmt.Sprintf(`Migration "%s" not found!`, name))
 		}
 
-		transaction := db.Begin()
+		db := postgres.New(
+			postgres.GetAuthenticationDbConfig(),
+			&gorm.Config{},
+		)
 
-		if err := migration.Down(transaction); err != nil {
-			transaction.Rollback()
-			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
-		}
+		executeds := GetExecutedMigrations(db)
 
-		if err := unmarkMigrationMigrated(transaction, migration.Name); err != nil {
-			transaction.Rollback()
-			log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
+		isExecuted := isMigrationExecuted(executeds, migration.Name)
+
+		if isExecuted {
+
+			transaction := db.Begin()
+
+			if err := migration.Down(transaction); err != nil {
+				transaction.Rollback()
+				log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
+			}
+
+			if err := unmarkMigrationMigrated(transaction, migration.Name); err != nil {
+				transaction.Rollback()
+				log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
+			}
+			transaction.Commit()
+
+		} else {
+			log.Warning(fmt.Sprintf(`Migration: "%s" not executed before`, migration.Name))
 		}
-		transaction.Commit()
 	},
 }
 

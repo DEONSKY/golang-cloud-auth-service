@@ -18,5 +18,5 @@ func InitAuthenticationDb() {
 }
 
 func init() {
-	log = logger.New("AUTHENTICATION_SERVICE", "PostgresConnection")
+	log = logger.New("AUTHENTICATION_SERVICE", "PostgresModule")
 }

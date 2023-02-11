@@ -2,24 +2,24 @@ Also we may need to make changes on the for using associations with dto
 
 ```go
 type IssueKanbanResponse struct {
-	Status StatusResponse	`json:"status"`
-	Issues []IssueResponse 	`json:"issues"`
+	Status	StatusResponse	`json:"status"`
+	Issues	[]IssueResponse 	`json:"issues"`
 }
 
 type IssueResponse struct {
-	Id 				string 					`json:"id"`
-	StatusId 		uint32 					`json:"statusId"`
-	Status 			StatusResponse 			`gorm:"-" json:"status"`
-	Reporter 		UserLabelResponse 		`json:"reporter"`
-	Assignie 		*UserLabelResponse 		`json:"assignie"`
+	Id		string 			`json:"id"`
+	StatusId 	uint32 			`json:"statusId"`
+	Status 		StatusResponse 		`gorm:"-" json:"status"`
+	Reporter 	UserLabelResponse 	`json:"reporter"`
+	Assignie 	*UserLabelResponse 	`json:"assignie"`
 	ChildIssues 	[]*LeafIssueResponse 	`gorm:"foreignkey:ParentIssueId;" json:"issues"`
 	DependentIssues []*LeafIssueResponse 	`gorm:"many2many:DependentIssues;foreignkey:Id;joinForeignKey:issueId;References:Id;	joinReferences:dependentIssueId" json:"dependentIssues"`
 }
 
 type LeafIssueResponse struct {
-	Id 			string 				`json:"id"`
+	Id 		string 			`json:"id"`
 	Reporter 	UserLabelResponse 	`json:"reporter"`
-	AssignieId 	*string 			`json:"assignieId"`
+	AssignieId 	*string 		`json:"assignieId"`
 	Assignie 	*UserLabelResponse 	`json:"assignie"`
 }
 
@@ -30,7 +30,7 @@ func (LeafIssueResponse) TableName() string {
 }
 
 type IssueCommentResponse struct {
-	Context 	string 	`json:"context"`
+	Context 	string	`json:"context"`
 	IssueId 	string 	`json:"issueId"`
 	CreatorId 	string 	`json:"-"`
 }
@@ -40,7 +40,7 @@ func (IssueCommentResponse) TableName() string {
 }
 
 type StatusResponse struct {
-	Id 		string
+	Id 	string
 	Title 	string
 	HexCode string
 }
@@ -50,8 +50,8 @@ func (UserLabelResponse) TableName() string {
 }
 
 type UserLabelResponse struct {
-	Id 					string 	`json:"id"`
-	Name 				string 	`json:"name"`
+	Id 			string 	`json:"id"`
+	Name 			string 	`json:"name"`
 	ProfilePictureURL 	string 	`json:"profilePictureURL"`
 }
 ```

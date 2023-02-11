@@ -89,7 +89,7 @@ func init() {
 	HTTP_PORT, err = strconv.Atoi(os.Getenv("HTTP_PORT"))
 
 	if err != nil {
-		log.Fatal(`Missin env variable "HTTP_PORT"`)
+		log.Fatal(`Missing env variable "HTTP_PORT"`)
 	}
 
 	log.Info("Env variable loaded successfully")
