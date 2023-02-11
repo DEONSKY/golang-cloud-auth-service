@@ -2,6 +2,8 @@ Gorm automaticly maps all fields inside Entities
 
 ## Example Models
 
+for more info: https://gorm.io/docs/models.html
+
 ```go
 
 //User represents users table in database
