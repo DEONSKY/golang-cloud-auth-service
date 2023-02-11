@@ -39,8 +39,6 @@ var MigrateCommand = &cobra.Command{
 
 		transaction := db.Begin()
 
-		defer transaction.Commit()
-
 		if len(name) > 0 {
 
 			migration := findMigration(name)
@@ -53,16 +51,19 @@ var MigrateCommand = &cobra.Command{
 
 			if !isExecuted {
 				migrate(*migration, transaction)
+
 			} else {
 				log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
 			}
-		}
-		for _, migration := range migrations.Migrations {
-			isExecuted := isMigrationExecuted(executeds, migration.Name)
-			if !isExecuted {
-				migrate(migration, transaction)
+		} else {
+			for _, migration := range migrations.Migrations {
+				isExecuted := isMigrationExecuted(executeds, migration.Name)
+				if !isExecuted {
+					migrate(migration, transaction)
+				}
 			}
 		}
+		transaction.Commit()
 
 	},
 }
