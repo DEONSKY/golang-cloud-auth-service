@@ -1,4 +1,4 @@
-Also we may need to make changes on the for using associations with dto
+If we want to map model to dto with gorm. We should define table name for child dtos. Gorm will detect it, and map the rows
 
 ```go
 type IssueKanbanResponse struct {
