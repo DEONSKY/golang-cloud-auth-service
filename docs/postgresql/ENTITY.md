@@ -1,3 +1,5 @@
+Gorm automaticly maps all fields inside Entities
+
 ```go
 
 //User represents users table in database
