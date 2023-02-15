@@ -8,8 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/service/s3"
-
-	"github.com/forfam/authentication-service/src/utils/logger"
 )
 
 const (
@@ -21,11 +19,10 @@ func MultipartUpload(
 	bucket string,
 	key string,
 	file *multipart.FileHeader,
-	log *logger.Logger,
 ) (string, error) {
 	fileBuffer, err := file.Open()
 	if err != nil {
-		log.Error("Error while file open: " + err.Error())
+		logger.Error("Error while file open: " + err.Error())
 		return "", err
 	}
 	defer fileBuffer.Close()
@@ -44,11 +41,11 @@ func MultipartUpload(
 
 	upload, err := s3Client.CreateMultipartUpload(input)
 	if err != nil {
-		log.Error("Something went wrong while creating multipart upload: " + err.Error())
+		logger.Error("Something went wrong while creating multipart upload: " + err.Error())
 		return "", err
 	}
 
-	log.Info("Multipart upload created for: " + key)
+	logger.Info("Multipart upload created for: " + key)
 
 	var curr, partLength int64
 	var remaining = fileSize
@@ -60,12 +57,12 @@ func MultipartUpload(
 		} else {
 			partLength = maxPartSize
 		}
-		completedPart, err := uploadPart(upload, buffer[curr:curr+partLength], partNumber, log)
+		completedPart, err := uploadPart(upload, buffer[curr:curr+partLength], partNumber)
 		if err != nil {
-			log.Error(err.Error())
+			logger.Error(err.Error())
 			err := abortMultipartUpload(upload)
 			if err != nil {
-				log.Error(err.Error())
+				logger.Error(err.Error())
 			}
 			return "", err
 		}
@@ -76,11 +73,11 @@ func MultipartUpload(
 
 	completeResponse, err := completeMultipartUpload(upload, completedParts)
 	if err != nil {
-		log.Error(err.Error())
+		logger.Error(err.Error())
 		return "", err
 	}
 
-	log.Info("Successfully uploaded file: " + completeResponse.String())
+	logger.Info("Successfully uploaded file: " + completeResponse.String())
 	return key, nil
 }
 
@@ -103,7 +100,6 @@ func uploadPart(
 	resp *s3.CreateMultipartUploadOutput,
 	fileBytes []byte,
 	partNumber int,
-	log *logger.Logger,
 ) (*s3.CompletedPart, error) {
 	tryNum := 1
 	partInput := &s3.UploadPartInput{
@@ -124,10 +120,10 @@ func uploadPart(
 				}
 				return nil, err
 			}
-			log.Warning("Retrying to upload part")
+			logger.Warning("Retrying to upload part")
 			tryNum++
 		} else {
-			log.Info("Uploaded part")
+			logger.Info("Uploaded part")
 			return &s3.CompletedPart{
 				ETag:       uploadResult.ETag,
 				PartNumber: aws.Int64(int64(partNumber)),

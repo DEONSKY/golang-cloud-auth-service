@@ -6,11 +6,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/forfam/authentication-service/src/utils/logger"
+	"github.com/forfam/authentication-service/log"
 	"github.com/joho/godotenv"
 )
 
-var log *logger.Logger
+var logger *log.Logger
 
 type goenv string
 
@@ -50,7 +50,7 @@ func GetConfig(key string, required bool) string {
 	val := os.Getenv(key)
 
 	if required == true && len(val) == 0 {
-		log.Fatal(fmt.Sprintf(`Missing env variable "%s"`, key))
+		logger.Fatal(fmt.Sprintf(`Missing env variable "%s"`, key))
 	}
 
 	return val
@@ -62,35 +62,35 @@ func GetConfigInt(key string, required bool) int {
 	converted, err := strconv.Atoi(val)
 
 	if err != nil {
-		log.Fatal(fmt.Sprintf(`Incompatible env value for "%s" should be int`, key))
+		logger.Fatal(fmt.Sprintf(`Incompatible env value for "%s" should be int`, key))
 	}
 
 	return converted
 }
 
 func init() {
-	log = logger.New("AUTHENTICATION_SERVICE", "ConfigModule")
+	logger = log.New("ConfigModule")
 	var err error
 
 	err = godotenv.Load(".env")
 
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		logger.Fatal("Error loading .env file")
 	}
 
-	log.Info("Env variable load started...")
+	logger.Info("Env variable load started...")
 
 	ENV, err = parseEnv(os.Getenv("GO_ENV"))
 
 	if err != nil {
-		log.Fatal(`Missing env variable "GO_ENV"`)
+		logger.Fatal(`Missing env variable "GO_ENV"`)
 	}
 
 	HTTP_PORT, err = strconv.Atoi(os.Getenv("HTTP_PORT"))
 
 	if err != nil {
-		log.Fatal(`Missing env variable "HTTP_PORT"`)
+		logger.Fatal(`Missing env variable "HTTP_PORT"`)
 	}
 
-	log.Info("Env variable loaded successfully")
+	logger.Info("Env variable loaded successfully")
 }

@@ -4,10 +4,10 @@ import (
 	"github.com/spf13/cobra"
 
 	postgresCommands "github.com/forfam/authentication-service/cmd/postgres"
-	"github.com/forfam/authentication-service/src/utils/logger"
+	"github.com/forfam/authentication-service/log"
 )
 
-var log *logger.Logger
+var logger *log.Logger
 
 var mainCommand = &cobra.Command{
 	Use:   "",
@@ -15,19 +15,16 @@ var mainCommand = &cobra.Command{
 	Run:   func(cmd *cobra.Command, args []string) {},
 }
 
-func init() {
-	log = logger.New("AUTHENTICATION_SERVICE", "CommandRunner")
-}
-
 func main() {
+	logger = log.New("CommandRunner")
 	mainCommand.AddCommand(
 		postgresCommands.CreateMigrationCommand,
 		postgresCommands.MigrateCommand,
 		postgresCommands.MigrateUndoCommand,
 	)
 	if err := mainCommand.Execute(); err != nil {
-		log.Fatal(`Something went wrong while running command!`)
+		logger.Fatal(`Something went wrong while running command!`)
 	}
 
-	log.Info(`Command runned successfully!`)
+	logger.Info(`Command runned successfully!`)
 }

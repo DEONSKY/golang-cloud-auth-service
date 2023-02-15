@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"github.com/forfam/authentication-service/src/config"
+	"github.com/forfam/authentication-service/config"
 )
 
 func GetAuthenticationDbConfig() *DbConnectionOptions {

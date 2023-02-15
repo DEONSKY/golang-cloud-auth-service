@@ -5,9 +5,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/forfam/authentication-service/config"
+	"github.com/forfam/authentication-service/files"
 	"github.com/forfam/authentication-service/postgres"
-	"github.com/forfam/authentication-service/src/config"
-	"github.com/forfam/authentication-service/src/files"
 )
 
 func main() {

@@ -19,7 +19,7 @@ var MigrateUndoCommand = &cobra.Command{
 		migration := findMigration(name)
 
 		if migration == nil {
-			log.Fatal(fmt.Sprintf(`Migration "%s" not found!`, name))
+			logger.Fatal(fmt.Sprintf(`Migration "%s" not found!`, name))
 		}
 
 		db := postgres.New(
@@ -35,17 +35,17 @@ var MigrateUndoCommand = &cobra.Command{
 
 			if err := migration.Down(transaction); err != nil {
 				transaction.Rollback()
-				log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
+				logger.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
 			}
 
 			if err := unmarkMigrationMigrated(transaction, migration.Name); err != nil {
 				transaction.Rollback()
-				log.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
+				logger.Fatal(fmt.Sprintf(`Something went wrong due "%s" undo migration`, migration.Name, err))
 			}
 			transaction.Commit()
 
 		} else {
-			log.Warning(fmt.Sprintf(`Migration: "%s" not executed before`, migration.Name))
+			logger.Warning(fmt.Sprintf(`Migration: "%s" not executed before`, migration.Name))
 		}
 	},
 }

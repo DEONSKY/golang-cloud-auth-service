@@ -1,4 +1,4 @@
-package logger
+package log
 
 import (
 	"encoding/json"
@@ -11,8 +11,9 @@ import (
 )
 
 type Logger struct {
-	App    string
-	Module string
+	App        string
+	Module     string
+	DateFormat string
 }
 
 type ProdLevelLog struct {
@@ -26,7 +27,7 @@ type colors func(format string, a ...interface{}) string
 func (l *Logger) debugLevelLog(message string, color colors) {
 	date := time.Now()
 	format := color("[%s] | [%s] - [%s]")
-	cmd := fmt.Sprintf(format+": %s\n", date.Format("2006-01-02T15:04:05.00000000000Z07:00"), l.App, l.Module, message)
+	cmd := fmt.Sprintf(format+": %s\n", date.Format(l.DateFormat), l.App, l.Module, message)
 	io.WriteString(os.Stdout, cmd)
 }
 
@@ -73,11 +74,12 @@ func (l *Logger) Fatal(message string) {
 	os.Exit(1)
 }
 
-func New(app string, module string) *Logger {
+func New(module string) *Logger {
 	return &Logger{
-		App:    app,
-		Module: module,
+		App:        "AUTHENTICATION_SERVICE",
+		Module:     module,
+		DateFormat: "2006-01-02T15:04:05.00000000000Z07:00",
 	}
 }
 
-var GlobalLogger *Logger = New("AUTHENTICATION_SERVICE", "MainModule")
+var GlobalLogger *Logger = New("MainModule")
