@@ -34,6 +34,15 @@ func findMigration(name string) *migrations.PostgresMigration {
 	return nil
 }
 
+func findExecutedMigration(db *gorm.DB, name string) bool {
+	row := MigrationSchema{name}
+	if result := db.First(&row); result.Error != nil || result.RowsAffected == 0 {
+		return false
+	}
+
+	return true
+}
+
 func isMigrationExecuted(executeds []MigrationSchema, name string) bool {
 	for _, v := range executeds {
 		if v.Name == name {

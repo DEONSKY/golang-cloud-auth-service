@@ -27,9 +27,7 @@ var MigrateUndoCommand = &cobra.Command{
 			&gorm.Config{},
 		)
 
-		executeds := GetExecutedMigrations(db)
-
-		isExecuted := isMigrationExecuted(executeds, migration.Name)
+		isExecuted := findExecutedMigration(db, migration.Name)
 
 		if isExecuted {
 
