@@ -1,0 +1,22 @@
+package migrations
+
+import (
+	"gorm.io/gorm"
+)
+
+func mig_{{.Name}}_up(transaction *gorm.DB) error {
+	return nil
+}
+
+func mig_{{.Name}}_down(transaction *gorm.DB) error {
+	return nil
+}
+
+func init() {
+  	Migrations = append(Migrations, PostgresMigration{
+		Name: "{{.Name}}",
+		Up:   mig_{{.Name}}_up,
+		Down: mig_{{.Name}}_down,
+	})
+}
+
