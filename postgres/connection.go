@@ -33,22 +33,22 @@ func connectWithRetry(
 			break
 		}
 
-		log.Warning(fmt.Sprintf(`Postgres DB connection retry %d failed with:`, i, err))
+		logger.Warning(fmt.Sprintf(`Postgres DB connection retry %d failed with:`, i, err))
 		time.Sleep(time.Duration(retryTimeout) * time.Second)
 	}
 
 	if err != nil {
-		log.Fatal(fmt.Sprintf(`Postgres DB connection failed with %d retry...`, retryCount, err))
+		logger.Fatal(fmt.Sprintf(`Postgres DB connection failed with %d retry...`, retryCount, err))
 	}
 
-	log.Info("Postgres DB successfully connected!")
+	logger.Info("Postgres DB successfully connected!")
 
 	return connection
 }
 
 func New(options *DbConnectionOptions, config *gorm.Config) *gorm.DB {
 	if options.MaxRetryCount < 0 {
-		log.Fatal(`"DbConnectionOptions.MaxRetryCount" can not be negative.`)
+		logger.Fatal(`"DbConnectionOptions.MaxRetryCount" can not be negative.`)
 	}
 
 	connectionUri := fmt.Sprintf(

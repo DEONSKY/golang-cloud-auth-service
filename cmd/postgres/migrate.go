@@ -14,12 +14,12 @@ import (
 func migrate(migration migrations.PostgresMigration, transaction *gorm.DB) {
 	if err := migration.Up(transaction); err != nil {
 		transaction.Rollback()
-		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
+		logger.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
 	}
 
 	if err := markMigrationMigrated(transaction, migration.Name); err != nil {
 		transaction.Rollback()
-		log.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
+		logger.Fatal(fmt.Sprintf(`Something went wrong due "%s" migration`, migration.Name, err))
 	}
 }
 
@@ -43,7 +43,7 @@ var MigrateCommand = &cobra.Command{
 
 			migration := findMigration(name)
 			if migration == nil {
-				log.Warning(fmt.Sprintf(`Migration not found "%s". Please check migration name exists in declared migrations folder`, name))
+				logger.Warning(fmt.Sprintf(`Migration not found "%s". Please check migration name exists in declared migrations folder`, name))
 				return
 			}
 
@@ -53,7 +53,7 @@ var MigrateCommand = &cobra.Command{
 				migrate(*migration, transaction)
 
 			} else {
-				log.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
+				logger.Warning(fmt.Sprintf(`Migration: "%s" already executed`, migration.Name))
 			}
 
 		} else {

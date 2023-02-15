@@ -3,12 +3,12 @@ package postgres
 import (
 	"gorm.io/gorm"
 
-	"github.com/forfam/authentication-service/src/utils/logger"
+	"github.com/forfam/authentication-service/log"
 )
 
 var AuthenticationDb *gorm.DB
 
-var log *logger.Logger
+var logger *log.Logger
 
 func InitAuthenticationDb() {
 	AuthenticationDb = New(
@@ -18,5 +18,5 @@ func InitAuthenticationDb() {
 }
 
 func init() {
-	log = logger.New("AUTHENTICATION_SERVICE", "PostgresModule")
+	logger = log.New("PostgresModule")
 }

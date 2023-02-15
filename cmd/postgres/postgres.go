@@ -1,9 +1,9 @@
 package postgres
 
-import "github.com/forfam/authentication-service/src/utils/logger"
+import "github.com/forfam/authentication-service/log"
 
-var log *logger.Logger
+var logger *log.Logger
 
 func init() {
-	log = logger.New("AUTHENTICATION_SERVICE", "PostgresMigrationCommands")
+	logger = log.New("PostgresMigrationCommands")
 }
