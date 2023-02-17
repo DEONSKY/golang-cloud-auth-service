@@ -3,8 +3,13 @@ package organization
 import "time"
 
 type CreateOrganizationPayload struct {
-	Name        string `json:"name" validate:"required,alpha,max=255"`
-	Description string `json:"description" validate:"required,alpha"`
+	Name        string `json:"name" validate:"required,max=255"`
+	Description string `json:"description" validate:"required"`
+}
+
+type UpdateOrganizationPayload struct {
+	Name        string `json:"name" validate:"omitempty,max=255"`
+	Description string `json:"description" validate:"omitempty"`
 }
 
 type OrganizationResponse struct {
