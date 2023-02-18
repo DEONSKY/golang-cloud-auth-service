@@ -4,7 +4,12 @@ import (
 	"fmt"
 
 	"github.com/forfam/authentication-service/postgres"
+	"github.com/forfam/authentication-service/utils/pagination"
 )
+
+func Paginate(opt *pagination.PaginationOptions) (*PaginationResult[any], error) {
+	return nil, nil
+}
 
 func CreateOrganization(data *CreateOrganizationPayload) (*OrganizationEntity, error) {
 	item := OrganizationEntity{

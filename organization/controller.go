@@ -4,7 +4,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/forfam/authentication-service/server"
+	"github.com/forfam/authentication-service/utils/pagination"
 )
+
+func getPaginatedOrganizationList(ctx *fiber.Ctx) error {
+	query := new(pagination.PaginationOptions)
+
+	if err := ctx.QueryParser(query); err != nil {
+		return err
+	}
+
+	res := Paginate(query)
+
+	return nil
+}
 
 func createOrganizationHandler(ctx *fiber.Ctx) error {
 	ctx.Accepts("application/json")
