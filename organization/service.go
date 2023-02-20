@@ -7,8 +7,10 @@ import (
 	"github.com/forfam/authentication-service/utils/pagination"
 )
 
-func Paginate(opt *pagination.PaginationOptions) (*PaginationResult[any], error) {
-	return nil, nil
+func GetOrganizationsPaginated(opt *pagination.PaginationOptions) (*pagination.PaginationResult[OrganizationResponse], error) {
+
+	return pagination.Paginate[OrganizationEntity, OrganizationResponse](postgres.AuthenticationDb, OrganizationEntity{}, opt)
+
 }
 
 func CreateOrganization(data *CreateOrganizationPayload) (*OrganizationEntity, error) {

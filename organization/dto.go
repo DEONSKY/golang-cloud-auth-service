@@ -36,3 +36,20 @@ func mapEntity(entity *OrganizationEntity) OrganizationResponse {
 		UpdatedAt:   entity.UpdatedAt,
 	}
 }
+
+func mapEntitySlice(entities []OrganizationEntity) []OrganizationResponse {
+	results := []OrganizationResponse{}
+	for _, entity := range entities {
+		results = append(
+			results,
+			OrganizationResponse{
+				Id:          entity.Id,
+				Name:        entity.Name,
+				Description: entity.Description,
+				CreatedAt:   entity.CreatedAt,
+				UpdatedAt:   entity.UpdatedAt,
+			},
+		)
+	}
+	return results
+}

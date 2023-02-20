@@ -14,9 +14,12 @@ func getPaginatedOrganizationList(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	res := Paginate(query)
+	res, err := GetOrganizationsPaginated(query)
+	if err != nil {
+		return err
+	}
 
-	return nil
+	return ctx.JSON(res)
 }
 
 func createOrganizationHandler(ctx *fiber.Ctx) error {
@@ -71,4 +74,5 @@ func init() {
 	organizationsGroup := server.Api.Group("/organizations")
 	organizationsGroup.Post("/", createOrganizationHandler)
 	organizationsGroup.Patch("/:id", updateOrganizationHandler)
+	organizationsGroup.Get("/", getPaginatedOrganizationList)
 }

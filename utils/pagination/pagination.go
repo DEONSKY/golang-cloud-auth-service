@@ -49,36 +49,35 @@ func (opt *PaginationOptions) GetSort() string {
 	return fmt.Sprintf("%s %s", field, direction)
 }
 
-type PaginationResult [T]struct {
+type PaginationResult[T any] struct {
 	Items      []*T  `json:"items"`
 	TotalCount int64 `json:"totalCount"`
 	Page       int   `json:"page"`
 	Limit      int   `json:"limit"`
 }
 
-func startupPagination[T any](db *gorm.DB, model T, opt *PaginationOptions) func(db *gorm.DB) *gorm.DB {
+func startupPagination[T any, DTO any](db *gorm.DB, model T, opt *PaginationOptions, pagination *PaginationResult[DTO]) func(db *gorm.DB) *gorm.DB {
 	var totalCount int64
 	db.Model(model).Count(&totalCount)
 
 	pagination.TotalCount = totalCount
 
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Offset(pagination.GetOffset()).Limit(pagination.GetLimit()).Order(pagination.GetSort())
+		return db.Offset(opt.GetOffset()).Limit(opt.GetLimit()).Order(opt.GetSort())
 	}
 }
 
-func Paginate[T any](db *gorm.DB, model T, opt *PaginationOptions) (*PaginationResult[T], error) {
-	var items []*T
+func Paginate[T any, DTO any](db *gorm.DB, model T, opt *PaginationOptions) (*PaginationResult[DTO], error) {
+	var items []*DTO
 
-	pagination := &PaginationResult[T]{
+	pagination := &PaginationResult[DTO]{
 		Items: items,
 		Page:  opt.GetPage(),
 		Limit: opt.GetLimit(),
 	}
 
-	db.Scopes(startupPagination(db, model, opt)).Find(&items)
+	db.Scopes(startupPagination(db, model, opt, pagination)).Model(model).Find(&items)
 	pagination.Items = items
-	pagination.TotalCount = opt.TotalCount
 
-	return &pagination, nil
+	return pagination, nil
 }
