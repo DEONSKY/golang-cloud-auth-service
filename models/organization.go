@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"gorm.io/gorm"
-
-	"github.com/forfam/authentication-service/server"
 )
 
 type OrganizationEntity struct {
@@ -37,17 +35,6 @@ type OrganizationResponse struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
-}
-
-func MapCreateOrganizationPayload(payload CreateOrganizationPayload) (OrganizationEntity, error) {
-	if err := server.ValidateStruct[CreateOrganizationPayload](*payload); err != nil {
-		return OrganizationEntity{}, err
-	}
-
-	return OrganizationEntity{
-		Name:        payload.Name,
-		Description: payload.Description,
-	}, nil
 }
 
 func MapOrganizationEntity(entity *OrganizationEntity) OrganizationResponse {

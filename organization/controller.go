@@ -11,7 +11,11 @@ func getPaginatedOrganizationList(ctx *fiber.Ctx) error {
 	query := new(pagination.PaginationOptions)
 
 	if err := ctx.QueryParser(query); err != nil {
-		return err
+		return ctx.Status(fiber.StatusBadRequest).JSON(err.Error())
+	}
+
+	if validationErrs := server.ValidateStruct[pagination.PaginationOptions](*query); validationErrs != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(validationErrs)
 	}
 
 	res, err := GetOrganizationsPaginated(query)

@@ -7,9 +7,9 @@ import (
 )
 
 type PaginationOptions struct {
-	Page           int    `query:"page"`
+	Page           int    `query:"page" validate:"required,number"`
 	Limit          int    `query:"limit"`
-	OrderDirection string `query:"orderDirection"`
+	OrderDirection string `query:"orderDirection" validate:"omitempty,oneof=asc desc"`
 	OrderBy        string `query:"orderBy"`
 	// Filters T
 }
