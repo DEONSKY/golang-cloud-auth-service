@@ -20,7 +20,7 @@ func CreatePolicy(data *CreatePolicyPayload) (*PolicyEntity, error) {
 	}
 
 	if err := postgres.AuthenticationDb.Create(&item).Error; err != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during creation of "Organization": %s - Error: %s`, data, err))
+		logger.Error(fmt.Sprintf(`Something went wrong during creation of "Policy": %s - Error: %s`, data, err))
 		return nil, err
 	}
 
