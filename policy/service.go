@@ -27,8 +27,9 @@ func CreatePolicy(data *CreatePolicyPayload) (*PolicyEntity, error) {
 	return &item, nil
 }
 
-func GetPoliciesPaginated(opt *pagination.PaginationOptions) (*pagination.PaginationResult[PolicyResponse], error) {
+func GetPoliciesPaginated(organizationId string, opt *pagination.PaginationOptions) (*pagination.PaginationResult[PolicyResponse], error) {
 
-	return pagination.Paginate[PolicyEntity, PolicyResponse](postgres.AuthenticationDb, PolicyEntity{}, opt)
+	tx := postgres.AuthenticationDb.Model(PolicyEntity{}).Where("organization_id = ?", organizationId)
 
+	return pagination.Paginate[PolicyResponse](tx, opt)
 }

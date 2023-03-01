@@ -9,7 +9,8 @@ import (
 
 func GetOrganizationsPaginated(opt *pagination.PaginationOptions) (*pagination.PaginationResult[OrganizationResponse], error) {
 
-	return pagination.Paginate[OrganizationEntity, OrganizationResponse](postgres.AuthenticationDb, OrganizationEntity{}, opt)
+	tx := postgres.AuthenticationDb.Model(OrganizationEntity{})
+	return pagination.Paginate[OrganizationResponse](tx, opt)
 
 }
 

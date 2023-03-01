@@ -56,9 +56,9 @@ type PaginationResult[T any] struct {
 	Limit      int   `json:"limit"`
 }
 
-func startupPagination[T any, DTO any](db *gorm.DB, model T, opt *PaginationOptions, pagination *PaginationResult[DTO]) func(db *gorm.DB) *gorm.DB {
+func startupPagination[DTO any](db *gorm.DB, opt *PaginationOptions, pagination *PaginationResult[DTO]) func(db *gorm.DB) *gorm.DB {
 	var totalCount int64
-	db.Model(model).Count(&totalCount)
+	db.Count(&totalCount)
 
 	pagination.TotalCount = totalCount
 
@@ -67,7 +67,7 @@ func startupPagination[T any, DTO any](db *gorm.DB, model T, opt *PaginationOpti
 	}
 }
 
-func Paginate[T any, DTO any](db *gorm.DB, model T, opt *PaginationOptions) (*PaginationResult[DTO], error) {
+func Paginate[DTO any](db *gorm.DB, opt *PaginationOptions) (*PaginationResult[DTO], error) {
 	var items []*DTO
 
 	pagination := &PaginationResult[DTO]{
@@ -76,7 +76,8 @@ func Paginate[T any, DTO any](db *gorm.DB, model T, opt *PaginationOptions) (*Pa
 		Limit: opt.GetLimit(),
 	}
 
-	db.Scopes(startupPagination(db, model, opt, pagination)).Model(model).Find(&items)
+	db.Scopes(startupPagination(db, opt, pagination)).Find(&items)
+
 	pagination.Items = items
 
 	return pagination, nil

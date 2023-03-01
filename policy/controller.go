@@ -26,13 +26,12 @@ func createPolicyHandler(ctx *fiber.Ctx) error {
 }
 
 func getPaginatedPoliciesList(ctx *fiber.Ctx) error {
-	// IN PROGRESS
-	paginationPayload, err := fiberutil.ParseBodyAndValidate[pagination.PaginationOptions](ctx)
+	paginationPayload, err := fiberutil.ParseQueryAndValidate[pagination.PaginationOptions](ctx)
 	if paginationPayload == nil || err != nil {
 		return err
 	}
 
-	res, err := GetPoliciesPaginated(paginationPayload)
+	res, err := GetPoliciesPaginated(ctx.Params("organizationId"), paginationPayload)
 	if err != nil {
 		return err
 	}
@@ -43,4 +42,5 @@ func getPaginatedPoliciesList(ctx *fiber.Ctx) error {
 func init() {
 	policyGroup := server.Api.Group("/policies")
 	policyGroup.Post("/", createPolicyHandler)
+	policyGroup.Get("/:organizationId", getPaginatedPoliciesList)
 }
