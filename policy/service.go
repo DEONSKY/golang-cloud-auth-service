@@ -33,3 +33,39 @@ func GetPoliciesPaginated(organizationId string, opt *pagination.PaginationOptio
 
 	return pagination.Paginate[PolicyResponse](tx, opt)
 }
+
+func UpdatePolicy(id string, data *UpdatePolicyPayload) (*PolicyEntity, error) {
+	item := PolicyEntity{
+		Id: id,
+	}
+
+	result := postgres.AuthenticationDb.First(&item)
+
+	if result.Error != nil {
+		logger.Error(fmt.Sprintf(`Something went wrong during find "Policy"! Id: %d - Error: %s`, id, result.Error))
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		logger.Warning(fmt.Sprintf(`Policy not found for update! Id: %d`, id))
+		return nil, nil
+	}
+
+	if len(data.Name) > 0 {
+		item.Name = data.Name
+	}
+
+	result = postgres.AuthenticationDb.Save(&item)
+
+	if result.Error != nil {
+		logger.Error(fmt.Sprintf(`Something went wrong during update "Policy"! Id: %d - Error: %s`, id, result.Error))
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		logger.Warning(fmt.Sprintf(`Policy not updated! Id: %d - Data: %s`, id, data))
+		return nil, nil
+	}
+
+	return &item, nil
+}

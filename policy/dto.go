@@ -15,6 +15,10 @@ type PolicyResponse struct {
 	UpdatedAt      time.Time
 }
 
+type UpdatePolicyPayload struct {
+	Name string `json:"name" validate:"omitempty,max=255"`
+}
+
 func (ent PolicyEntity) mapEntity() PolicyResponse {
 	return PolicyResponse{
 		Id:             ent.Id,
