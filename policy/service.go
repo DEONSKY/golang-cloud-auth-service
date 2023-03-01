@@ -69,3 +69,35 @@ func UpdatePolicy(id string, data *UpdatePolicyPayload) (*PolicyEntity, error) {
 
 	return &item, nil
 }
+
+func deletePolicy(id string) (*PolicyEntity, error) {
+	item := PolicyEntity{
+		Id: id,
+	}
+
+	result := postgres.AuthenticationDb.First(&item)
+
+	if result.Error != nil {
+		logger.Error(fmt.Sprintf(`Something went wrong during find "Policy"! Id: %d - Error: %s`, id, result.Error))
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		logger.Warning(fmt.Sprintf(`Policy not found for delete! Id: %d`, id))
+		return nil, nil
+	}
+
+	result = postgres.AuthenticationDb.Delete(&item)
+
+	if result.Error != nil {
+		logger.Error(fmt.Sprintf(`Something went wrong during delete "Policy"! Id: %d - Error: %s`, id, result.Error))
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		logger.Warning(fmt.Sprintf(`Policy not deleted! Id: %d`, id))
+		return nil, nil
+	}
+
+	return &item, nil
+}

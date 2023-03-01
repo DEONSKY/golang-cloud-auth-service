@@ -59,9 +59,25 @@ func updatePolicyHandler(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(item.mapEntity())
 }
 
+func deletePolicyHandle(ctx *fiber.Ctx) error {
+	ctx.Accepts("application/json")
+
+	item, err := deletePolicy(ctx.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	if item == nil {
+		return ctx.Status(fiber.StatusNotModified).Send(nil)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(item.mapEntity())
+}
+
 func init() {
 	policyGroup := server.Api.Group("/policies")
 	policyGroup.Post("/", createPolicyHandler)
 	policyGroup.Patch("/:id", updatePolicyHandler)
 	policyGroup.Get("/:organizationId", getPaginatedPoliciesList)
+	policyGroup.Delete("/:id", deletePolicyHandle)
 }

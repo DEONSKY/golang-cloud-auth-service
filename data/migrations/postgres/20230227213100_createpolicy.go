@@ -8,8 +8,8 @@ import (
 
 type mig_20230227213100_createpolicy_struct struct {
 	Id             string                                `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	Name           string                                `gorm:"type:varchar(255);index:idx_unique_name_per_organization,unique;not null"`
-	OrganizationId string                                `gorm:"type:uuid;index:idx_unique_name_per_organization,unique;not null"`
+	Name           string                                `gorm:"type:varchar(255);not null"`
+	OrganizationId string                                `gorm:"type:uuid;not null"`
 	Organization   mig_20230216213520_createorganization `gorm:"foreignkey:OrganizationId;"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
