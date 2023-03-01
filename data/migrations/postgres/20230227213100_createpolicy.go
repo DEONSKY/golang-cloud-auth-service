@@ -8,8 +8,8 @@ import (
 
 type mig_20230227213100_createpolicy_struct struct {
 	Id             string                                `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
-	Name           string                                `gorm:"type:varchar(255);not null"`
-	OrganizationId string                                `gorm:"type:uuid"`
+	Name           string                                `gorm:"type:varchar(255);index:idx_unique_name_per_organization,unique;not null"`
+	OrganizationId string                                `gorm:"type:uuid;index:idx_unique_name_per_organization,unique;not null"`
 	Organization   mig_20230216213520_createorganization `gorm:"foreignkey:OrganizationId;"`
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
@@ -17,7 +17,7 @@ type mig_20230227213100_createpolicy_struct struct {
 }
 
 func (entity *mig_20230227213100_createpolicy_struct) TableName() string {
-	return "policy"
+	return "policies"
 }
 
 func mig_20230227213100_createpolicy_up(transaction *gorm.DB) error {
@@ -25,7 +25,7 @@ func mig_20230227213100_createpolicy_up(transaction *gorm.DB) error {
 }
 
 func mig_20230227213100_createpolicy_down(transaction *gorm.DB) error {
-	return transaction.Migrator().CreateTable(&mig_20230227213100_createpolicy_struct{})
+	return transaction.Migrator().DropTable(&mig_20230227213100_createpolicy_struct{})
 }
 
 func init() {

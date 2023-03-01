@@ -18,5 +18,5 @@ type PolicyEntity struct {
 }
 
 func (entity *PolicyEntity) TableName() string {
-	return "policy"
+	return "policies"
 }
