@@ -11,7 +11,7 @@ func mig_20230301222120_policy_unique_name_per_organization_up(transaction *gorm
 }
 
 func mig_20230301222120_policy_unique_name_per_organization_down(transaction *gorm.DB) error {
-	return transaction.Exec(`DROP UNIQUE INDEX idx_unique_name_per_organization ON policies(name,organization_id) WHERE deleted_at IS NULL`).Error
+	return transaction.Exec(`DROP INDEX idx_unique_name_per_organization`).Error
 }
 
 func init() {
