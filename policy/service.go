@@ -1,11 +1,10 @@
 package policy
 
 import (
-	"fmt"
-
 	"github.com/forfam/authentication-service/organization"
 	"github.com/forfam/authentication-service/postgres"
 	"github.com/forfam/authentication-service/utils/pagination"
+	reslog "github.com/forfam/authentication-service/utils/resultlogger"
 )
 
 func CreatePolicy(data *CreatePolicyPayload) (*PolicyEntity, error) {
@@ -14,13 +13,16 @@ func CreatePolicy(data *CreatePolicyPayload) (*PolicyEntity, error) {
 		OrganizationId: data.OrganizationId,
 	}
 
-	if err := postgres.AuthenticationDb.First(&organization.OrganizationEntity{Id: item.OrganizationId}).Error; err != nil {
-		logger.Error(fmt.Sprintf(`Organization not found: %s`, err))
+	result := postgres.AuthenticationDb.First(&organization.OrganizationEntity{Id: item.OrganizationId})
+
+	result, err := reslog.LogGormResult(result, logger, item.OrganizationId, reslog.ErrorNotFoundLogMsg, "", "Organization")
+	if result == nil {
 		return nil, err
 	}
 
-	if err := postgres.AuthenticationDb.Create(&item).Error; err != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during creation of "Policy": %s - Error: %s`, data, err))
+	result = postgres.AuthenticationDb.Create(&item)
+	result, err = reslog.LogGormResult(result, logger, "undefined", reslog.ErrorDuringCreateLogMsg, "", "Policy")
+	if result == nil {
 		return nil, err
 	}
 
@@ -41,14 +43,9 @@ func UpdatePolicy(id string, data *UpdatePolicyPayload) (*PolicyEntity, error) {
 
 	result := postgres.AuthenticationDb.First(&item)
 
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during find "Policy"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Policy not found for update! Id: %d`, id))
-		return nil, nil
+	result, err := reslog.LogGormResult(result, logger, id, reslog.ErrorDuringFindLogMsg, reslog.NotFoundForUpdateLogMsg, "Policy")
+	if result == nil {
+		return nil, err
 	}
 
 	if len(data.Name) > 0 {
@@ -57,14 +54,9 @@ func UpdatePolicy(id string, data *UpdatePolicyPayload) (*PolicyEntity, error) {
 
 	result = postgres.AuthenticationDb.Save(&item)
 
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during update "Policy"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Policy not updated! Id: %d - Data: %s`, id, data))
-		return nil, nil
+	result, err = reslog.LogGormResult(result, logger, id, reslog.ErrorDuringUpdateLogMsg, reslog.NotUpdatedLogMsg, "Policy")
+	if result == nil {
+		return nil, err
 	}
 
 	return &item, nil
@@ -77,26 +69,16 @@ func deletePolicy(id string) (*PolicyEntity, error) {
 
 	result := postgres.AuthenticationDb.First(&item)
 
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during find "Policy"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Policy not found for delete! Id: %d`, id))
-		return nil, nil
+	result, err := reslog.LogGormResult(result, logger, id, reslog.ErrorDuringFindLogMsg, reslog.NotFoundForDeleteLogMsg, "Policy")
+	if result == nil {
+		return nil, err
 	}
 
 	result = postgres.AuthenticationDb.Delete(&item)
 
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during delete "Policy"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Policy not deleted! Id: %d`, id))
-		return nil, nil
+	result, err = reslog.LogGormResult(result, logger, id, reslog.ErrorDuringDeleteLogMsg, reslog.NotDeletedLogMsg, "Policy")
+	if result == nil {
+		return nil, err
 	}
 
 	return &item, nil

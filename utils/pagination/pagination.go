@@ -76,7 +76,9 @@ func Paginate[DTO any](db *gorm.DB, opt *PaginationOptions) (*PaginationResult[D
 		Limit: opt.GetLimit(),
 	}
 
-	db.Scopes(startupPagination(db, opt, pagination)).Find(&items)
+	if err := db.Scopes(startupPagination(db, opt, pagination)).Find(&items).Error; err != nil {
+		return nil, err
+	}
 
 	pagination.Items = items
 
