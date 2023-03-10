@@ -12,7 +12,9 @@ var App *fiber.App
 var Api fiber.Router
 
 func init() {
-	App = fiber.New()
+	App = fiber.New(fiber.Config{
+		ErrorHandler: config.NewErrorHandlerConfig(),
+	})
 	Api = App.Group("/api")
 }
 
