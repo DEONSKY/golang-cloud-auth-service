@@ -1,10 +1,10 @@
 package policy
 
 import (
+	"github.com/forfam/authentication-service/genericrepo"
 	"github.com/forfam/authentication-service/organization"
 	"github.com/forfam/authentication-service/postgres"
 	"github.com/forfam/authentication-service/utils/pagination"
-	reslog "github.com/forfam/authentication-service/utils/resultlogger"
 )
 
 func CreatePolicy(data *CreatePolicyPayload) (*PolicyEntity, error) {
@@ -13,16 +13,15 @@ func CreatePolicy(data *CreatePolicyPayload) (*PolicyEntity, error) {
 		OrganizationId: data.OrganizationId,
 	}
 
-	result := postgres.AuthenticationDb.First(&organization.OrganizationEntity{Id: item.OrganizationId})
-
-	result, err := reslog.LogGormResult(result, logger, item.OrganizationId, reslog.ErrorNotFoundLogMsg, "", "Organization")
-	if result == nil {
+	if err := genericrepo.Take(&organization.OrganizationEntity{Id: item.OrganizationId}, "Organization", *logger); err != nil {
 		return nil, err
 	}
 
-	result = postgres.AuthenticationDb.Create(&item)
-	result, err = reslog.LogGormResult(result, logger, "undefined", reslog.ErrorDuringCreateLogMsg, "", "Policy")
-	if result == nil {
+	if err := genericrepo.IsRelationNotExists(&item, []string{"Organization", "Policy"}, *logger); err != nil {
+		return nil, err
+	}
+
+	if err := genericrepo.Create(&item, "Policy", *logger); err != nil {
 		return nil, err
 	}
 
@@ -41,10 +40,7 @@ func UpdatePolicy(id string, data *UpdatePolicyPayload) (*PolicyEntity, error) {
 		Id: id,
 	}
 
-	result := postgres.AuthenticationDb.First(&item)
-
-	result, err := reslog.LogGormResult(result, logger, id, reslog.ErrorDuringFindLogMsg, reslog.NotFoundForUpdateLogMsg, "Policy")
-	if result == nil {
+	if err := genericrepo.Take(&item, "Policy", *logger); err != nil {
 		return nil, err
 	}
 
@@ -52,10 +48,7 @@ func UpdatePolicy(id string, data *UpdatePolicyPayload) (*PolicyEntity, error) {
 		item.Name = data.Name
 	}
 
-	result = postgres.AuthenticationDb.Save(&item)
-
-	result, err = reslog.LogGormResult(result, logger, id, reslog.ErrorDuringUpdateLogMsg, reslog.NotUpdatedLogMsg, "Policy")
-	if result == nil {
+	if err := genericrepo.Update(&item, "Policy", *logger); err != nil {
 		return nil, err
 	}
 
@@ -67,17 +60,11 @@ func deletePolicy(id string) (*PolicyEntity, error) {
 		Id: id,
 	}
 
-	result := postgres.AuthenticationDb.First(&item)
-
-	result, err := reslog.LogGormResult(result, logger, id, reslog.ErrorDuringFindLogMsg, reslog.NotFoundForDeleteLogMsg, "Policy")
-	if result == nil {
+	if err := genericrepo.Take(&item, "Policy", *logger); err != nil {
 		return nil, err
 	}
 
-	result = postgres.AuthenticationDb.Delete(&item)
-
-	result, err = reslog.LogGormResult(result, logger, id, reslog.ErrorDuringDeleteLogMsg, reslog.NotDeletedLogMsg, "Policy")
-	if result == nil {
+	if err := genericrepo.Delete(&item, "Policy", *logger); err != nil {
 		return nil, err
 	}
 

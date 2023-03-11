@@ -12,7 +12,7 @@ func createGroupHandler(ctx *fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
 	createGroupPayload, err := fiberutil.ParseBodyAndValidate[CreateGroupPayload](ctx)
-	if createGroupPayload == nil || err != nil {
+	if err != nil {
 		return err
 	}
 
@@ -27,7 +27,7 @@ func createGroupHandler(ctx *fiber.Ctx) error {
 
 func getPaginatedGroupsList(ctx *fiber.Ctx) error {
 	paginationPayload, err := fiberutil.ParseQueryAndValidate[pagination.PaginationOptions](ctx)
-	if paginationPayload == nil || err != nil {
+	if err != nil {
 		return err
 	}
 
@@ -43,7 +43,7 @@ func updateGroupHandler(ctx *fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
 	updateGroupPayload, err := fiberutil.ParseBodyAndValidate[UpdateGroupPayload](ctx)
-	if updateGroupPayload == nil || err != nil {
+	if err != nil {
 		return err
 	}
 

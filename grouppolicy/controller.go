@@ -41,7 +41,7 @@ func getPaginatedPoliciesOfGroup(ctx *fiber.Ctx) error {
 func deleteGroupPolicyByIdHandle(ctx *fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
-	item, err := deleteGroupPolicyById(ctx.Params("id"))
+	item, err := DeleteGroupPolicyById(ctx.Params("id"))
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package fiber
 
 import (
 	"github.com/forfam/authentication-service/customerror"
+	"github.com/forfam/authentication-service/i18n"
 	"github.com/forfam/authentication-service/server"
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,7 +15,12 @@ func ParseBodyAndValidate[T any](ctx *fiber.Ctx) (*T, error) {
 	}
 
 	if validationErrs := server.ValidateStruct(*body); validationErrs != nil {
-		return nil, customerror.NewValidationError("Body not fitting validation rules", &validationErrs, nil)
+		return nil, customerror.NewValidationError("Body not fitting validation rules", &validationErrs,
+			i18n.NewTranslatable("asdasd", &map[string]interface{}{
+				"a": "c",
+				"b": 2,
+			}),
+		)
 	}
 
 	return body, nil

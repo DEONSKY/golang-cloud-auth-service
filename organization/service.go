@@ -1,8 +1,7 @@
 package organization
 
 import (
-	"fmt"
-
+	"github.com/forfam/authentication-service/genericrepo"
 	"github.com/forfam/authentication-service/postgres"
 	"github.com/forfam/authentication-service/utils/pagination"
 )
@@ -20,8 +19,7 @@ func CreateOrganization(data *CreateOrganizationPayload) (*OrganizationEntity, e
 		Description: data.Description,
 	}
 
-	if err := postgres.AuthenticationDb.Create(&item).Error; err != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during creation of "Organization": %s - Error: %s`, data, err))
+	if err := genericrepo.Create(&item, "Organization", *logger); err != nil {
 		return nil, err
 	}
 
@@ -33,16 +31,8 @@ func UpdateOrganization(id string, data *UpdateOrganizationPayload) (*Organizati
 		Id: id,
 	}
 
-	result := postgres.AuthenticationDb.First(&item)
-
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during find "Organization": %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Organization not found for update! OrganizationId: %d`, id))
-		return nil, nil
+	if err := genericrepo.Take(&item, "Organization", *logger); err != nil {
+		return nil, err
 	}
 
 	if len(data.Name) > 0 {
@@ -53,16 +43,8 @@ func UpdateOrganization(id string, data *UpdateOrganizationPayload) (*Organizati
 		item.Description = data.Description
 	}
 
-	result = postgres.AuthenticationDb.Save(&item)
-
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during update "Organization"! OrganizationId: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Organization not updated! OrganizationId: %d - Data: %s`, id, data))
-		return nil, nil
+	if err := genericrepo.Update(&item, "Organization", *logger); err != nil {
+		return nil, err
 	}
 
 	return &item, nil

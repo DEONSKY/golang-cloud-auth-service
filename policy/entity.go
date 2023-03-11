@@ -1,6 +1,7 @@
 package policy
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/forfam/authentication-service/organization"
@@ -19,4 +20,9 @@ type PolicyEntity struct {
 
 func (entity *PolicyEntity) TableName() string {
 	return "policies"
+}
+
+func (entity PolicyEntity) String() string {
+	return fmt.Sprintf(`Id: %s, Name: %s, OrganizationId: %s, CreatedAt: %s, UpdatedAt %s, DeletedAt %s`,
+		entity.Id, entity.Name, entity.OrganizationId, entity.CreatedAt, entity.UpdatedAt, entity.DeletedAt.Time)
 }

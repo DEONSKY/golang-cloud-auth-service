@@ -1,6 +1,7 @@
 package grouppolicy
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/forfam/authentication-service/group"
@@ -21,4 +22,9 @@ type GroupPolicyEntity struct {
 
 func (entity *GroupPolicyEntity) TableName() string {
 	return "group_policies"
+}
+
+func (entity GroupPolicyEntity) String() string {
+	return fmt.Sprintf(`Id: %s, PolicyId: %s, GroupId: %s, CreatedAt: %s, UpdatedAt %s, DeletedAt %s`,
+		entity.Id, entity.PolicyId, entity.GroupId, entity.CreatedAt, entity.UpdatedAt, entity.DeletedAt.Time)
 }

@@ -1,6 +1,7 @@
 package organization
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -17,4 +18,9 @@ type OrganizationEntity struct {
 
 func (entity *OrganizationEntity) TableName() string {
 	return "organizations"
+}
+
+func (entity OrganizationEntity) String() string {
+	return fmt.Sprintf(`Id: %s, Name: %s, Description: %s, CreatedAt: %s, UpdatedAt %s, DeletedAt %s`,
+		entity.Id, entity.Name, entity.Description, entity.CreatedAt, entity.UpdatedAt, entity.DeletedAt.Time)
 }

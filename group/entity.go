@@ -1,6 +1,7 @@
 package group
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/forfam/authentication-service/organization"
@@ -20,4 +21,9 @@ type GroupEntity struct {
 
 func (entity *GroupEntity) TableName() string {
 	return "groups"
+}
+
+func (entity GroupEntity) String() string {
+	return fmt.Sprintf(`Id: %s, Name: %s, Description: %s, OrganizationId: %s, CreatedAt: %s, UpdatedAt %s, DeletedAt %s`,
+		entity.Id, entity.Name, entity.Description, entity.OrganizationId, entity.CreatedAt, entity.UpdatedAt, entity.DeletedAt.Time)
 }

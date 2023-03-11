@@ -1,8 +1,7 @@
 package group
 
 import (
-	"fmt"
-
+	"github.com/forfam/authentication-service/genericrepo"
 	"github.com/forfam/authentication-service/organization"
 	"github.com/forfam/authentication-service/postgres"
 	"github.com/forfam/authentication-service/utils/pagination"
@@ -15,13 +14,11 @@ func CreateGroup(data *CreateGroupPayload) (*GroupEntity, error) {
 		OrganizationId: data.OrganizationId,
 	}
 
-	if err := postgres.AuthenticationDb.First(&organization.OrganizationEntity{Id: item.OrganizationId}).Error; err != nil {
-		logger.Error(fmt.Sprintf(`Organization not found: %s`, err))
+	if err := genericrepo.Take(&organization.OrganizationEntity{Id: item.OrganizationId}, "Organization", *logger); err != nil {
 		return nil, err
 	}
 
-	if err := postgres.AuthenticationDb.Create(&item).Error; err != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during creation of "Group": %s - Error: %s`, data, err))
+	if err := genericrepo.Create(&item, "Policy", *logger); err != nil {
 		return nil, err
 	}
 
@@ -40,16 +37,8 @@ func UpdateGroup(id string, data *UpdateGroupPayload) (*GroupEntity, error) {
 		Id: id,
 	}
 
-	result := postgres.AuthenticationDb.First(&item)
-
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during find "Group"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Group not found for update! Id: %d`, id))
-		return nil, nil
+	if err := genericrepo.Take(&item, "Organization", *logger); err != nil {
+		return nil, err
 	}
 
 	if len(data.Name) > 0 {
@@ -60,16 +49,8 @@ func UpdateGroup(id string, data *UpdateGroupPayload) (*GroupEntity, error) {
 		item.Description = data.Description
 	}
 
-	result = postgres.AuthenticationDb.Save(&item)
-
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during update "Group"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Group not updated! Id: %d - Data: %s`, id, data))
-		return nil, nil
+	if err := genericrepo.Update(&item, "Group", *logger); err != nil {
+		return nil, err
 	}
 
 	return &item, nil
@@ -80,28 +61,12 @@ func deleteGroup(id string) (*GroupEntity, error) {
 		Id: id,
 	}
 
-	result := postgres.AuthenticationDb.First(&item)
-
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during find "Group"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
+	if err := genericrepo.Take(&item, "Group", *logger); err != nil {
+		return nil, err
 	}
 
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Group not found for delete! Id: %d`, id))
-		return nil, nil
-	}
-
-	result = postgres.AuthenticationDb.Delete(&item)
-
-	if result.Error != nil {
-		logger.Error(fmt.Sprintf(`Something went wrong during delete "Group"! Id: %d - Error: %s`, id, result.Error))
-		return nil, result.Error
-	}
-
-	if result.RowsAffected == 0 {
-		logger.Warning(fmt.Sprintf(`Group not deleted! Id: %d`, id))
-		return nil, nil
+	if err := genericrepo.Delete(&item, "Group", *logger); err != nil {
+		return nil, err
 	}
 
 	return &item, nil

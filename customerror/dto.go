@@ -1,12 +1,17 @@
 package customerror
 
-import "time"
+import (
+	"time"
+
+	"github.com/forfam/authentication-service/i18n"
+)
 
 type CoreErrorResponse struct {
 	Err         string    `json:"error"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	HttpCode    int       `json:"httpCode"`
+	I18nMessage *string   `json:"message"`
 }
 
 type ValidationErrorResponse struct {
@@ -15,6 +20,7 @@ type ValidationErrorResponse struct {
 	CreatedAt   time.Time `json:"createdAt"`
 	CoreError   error     `json:"coreError"`
 	HttpCode    int       `json:"httpCode"`
+	I18nMessage *string   `json:"message"`
 }
 
 func (err CoreError) MapToCoreErrorResponse() CoreErrorResponse {
@@ -23,6 +29,7 @@ func (err CoreError) MapToCoreErrorResponse() CoreErrorResponse {
 		Description: err.Description,
 		CreatedAt:   err.CreatedAt,
 		HttpCode:    err.HttpCode,
+		I18nMessage: i18n.Translate(err.I18n),
 	}
 }
 
@@ -33,5 +40,6 @@ func (err CoreError) MapToValidationErrorResponse() ValidationErrorResponse {
 		CoreError:   err.CoreError,
 		CreatedAt:   err.CreatedAt,
 		HttpCode:    err.HttpCode,
+		I18nMessage: i18n.Translate(err.I18n),
 	}
 }

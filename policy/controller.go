@@ -12,7 +12,7 @@ func createPolicyHandler(ctx *fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
 	createPolicyPayload, err := fiberutil.ParseBodyAndValidate[CreatePolicyPayload](ctx)
-	if createPolicyPayload == nil || err != nil {
+	if err != nil {
 		return err
 	}
 
@@ -27,7 +27,7 @@ func createPolicyHandler(ctx *fiber.Ctx) error {
 
 func getPaginatedPoliciesList(ctx *fiber.Ctx) error {
 	paginationPayload, err := fiberutil.ParseQueryAndValidate[pagination.PaginationOptions](ctx)
-	if paginationPayload == nil || err != nil {
+	if err != nil {
 		return err
 	}
 
@@ -43,7 +43,7 @@ func updatePolicyHandler(ctx *fiber.Ctx) error {
 	ctx.Accepts("application/json")
 
 	updatePolicyPayload, err := fiberutil.ParseBodyAndValidate[UpdatePolicyPayload](ctx)
-	if updatePolicyPayload == nil || err != nil {
+	if err != nil {
 		return err
 	}
 
