@@ -18,7 +18,7 @@ type ValidationErrorResponse struct {
 	Err         string    `json:"error"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
-	CoreError   error     `json:"coreError"`
+	CoreError   error     `json:"cause"`
 	HttpCode    int       `json:"httpCode"`
 	I18nMessage *string   `json:"message"`
 }
@@ -37,7 +37,7 @@ func (err CoreError) MapToValidationErrorResponse() ValidationErrorResponse {
 	return ValidationErrorResponse{
 		Err:         err.Err.Error(),
 		Description: err.Description,
-		CoreError:   err.CoreError,
+		CoreError:   err.CauseError,
 		CreatedAt:   err.CreatedAt,
 		HttpCode:    err.HttpCode,
 		I18nMessage: i18n.Translate(err.I18n),

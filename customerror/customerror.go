@@ -11,17 +11,17 @@ type CoreError struct {
 	Err         error
 	Description string
 	CreatedAt   time.Time
-	CoreError   error
+	CauseError  error
 	HttpCode    int
 	I18n        *i18n.Translatable
 }
 
 func (err CoreError) Error() string {
-	return fmt.Sprintf("[%s] %s : %s / Caused by: %s ", err.CreatedAt, err.Err, err.Description, err.CoreError)
+	return fmt.Sprintf("[%s] %s : %s / Caused by: %s ", err.CreatedAt, err.Err, err.Description, err.CauseError)
 }
 
 func (err CoreError) Expose() string {
-	return fmt.Sprintf("[%s] %s : %s / Caused by: %s ", err.CreatedAt, err.Err, err.Description, err.CoreError)
+	return fmt.Sprintf("[%s] %s : %s / Caused by: %s ", err.CreatedAt, err.Err, err.Description, err.CauseError)
 }
 
 func new(Err error, description string, coreError *error, httpCode int, i18n *i18n.Translatable) *CoreError {
@@ -33,7 +33,7 @@ func new(Err error, description string, coreError *error, httpCode int, i18n *i1
 		Err:         Err,
 		Description: description,
 		CreatedAt:   time.Now(),
-		CoreError:   decidedError,
+		CauseError:  decidedError,
 		HttpCode:    httpCode,
 		I18n:        i18n,
 	}
