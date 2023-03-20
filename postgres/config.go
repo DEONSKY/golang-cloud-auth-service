@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"github.com/forfam/authentication-service/config"
+
+	gormLogger "gorm.io/gorm/logger"
 )
 
 func GetAuthenticationDbConfig() *DbConnectionOptions {
@@ -14,4 +16,13 @@ func GetAuthenticationDbConfig() *DbConnectionOptions {
 		MaxRetryCount:          5,
 		ConnectionRetryTimeout: 10,
 	}
+}
+
+func DeclareLogLevel() gormLogger.LogLevel {
+	logLevel := gormLogger.Silent
+	goenv := config.GetConfig("GO_ENV", false)
+	if goenv == "development" {
+		logLevel = gormLogger.Info
+	}
+	return logLevel
 }
